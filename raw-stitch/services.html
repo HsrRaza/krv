@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Services - KRV Builders &amp; Developers</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#191c1e",
+                        "on-tertiary-fixed-variant": "#3a485b",
+                        "outline-variant": "#c6c6cd",
+                        "secondary": "#904d00",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "secondary-container": "#fe932c",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed-dim": "#b9c7df",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary-fixed": "#2f1500",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#7c839b",
+                        "primary": "#000000",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#ffb77d",
+                        "primary-fixed-dim": "#bec6e0",
+                        "tertiary-container": "#0d1c2e",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdcc3",
+                        "on-secondary-container": "#663500",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-dim": "#d8dadc",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container": "#eceef0",
+                        "inverse-primary": "#bec6e0",
+                        "on-surface-variant": "#45464d",
+                        "outline": "#76777d",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#77859a",
+                        "tertiary-fixed": "#d5e3fc",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2d3133",
+                        "surface-tint": "#565e74",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#0d1c2e",
+                        "on-primary": "#ffffff",
+                        "surface": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "max-width": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Montserrat"],
+                        "headline-md": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill-1 {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full bg-surface/95 dark:bg-surface-container-high/95 backdrop-blur-md border-b border-outline-variant/30 shadow-sm z-50 transition-all">
+<div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto z-50">
+<!-- Brand Logo -->
+<a class="font-headline-md text-headline-md tracking-tighter text-primary dark:text-on-primary-fixed" href="#">
+                KRV BUILDERS
+            </a>
+<!-- Navigation Links (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary hover:text-secondary-fixed-variant transition-colors transition-all duration-300 font-label-sm text-label-sm" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary hover:text-secondary-fixed-variant transition-colors transition-all duration-300 font-label-sm text-label-sm" href="#">About</a>
+<!-- Active State Logic Applied Here -->
+<a aria-current="page" class="text-primary dark:text-primary-fixed font-bold border-b-2 border-secondary font-label-sm text-label-sm" href="#">Services</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary hover:text-secondary-fixed-variant transition-colors transition-all duration-300 font-label-sm text-label-sm" href="#">Gallery</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary hover:text-secondary-fixed-variant transition-colors transition-all duration-300 font-label-sm text-label-sm" href="#">Contact</a>
+</nav>
+<!-- Trailing Action & Mobile Menu Toggle -->
+<div class="flex items-center gap-4">
+<a class="hidden md:inline-flex items-center justify-center bg-primary text-on-primary font-label-sm text-label-sm px-6 py-3 rounded-lg scale-95 active:scale-90 transition-transform hover:bg-tertiary-container" href="#">
+                    Get Free Quote
+                </a>
+<button aria-label="Open menu" class="md:hidden p-2 text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-28 pb-20">
+<!-- Header Section -->
+<section class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop text-center py-16 md:py-24 relative overflow-hidden">
+<!-- Abstract Architectural Accent -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-secondary-fixed opacity-20 blur-3xl -z-10 rounded-full"></div>
+<div class="inline-flex items-center gap-2 bg-secondary-fixed-dim/30 text-secondary px-4 py-2 rounded-full mb-6 font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                Comprehensive Construction Solutions
+            </div>
+<h1 class="font-headline-xl text-headline-xl md:text-[56px] md:leading-[64px] text-primary mb-6 max-w-4xl mx-auto">
+                End-to-End Engineering &amp; Architectural Services
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                From Vastu-compliant blueprints and structural analysis to full turnkey construction and bespoke interiors in Ramanagara.
+            </p>
+</section>
+<!-- Services Grid Section -->
+<section class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-12">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1: Architectural Planning -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Architectural Planning with Vastu</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Functional, aesthetic 2D/3D floor layouts designed strictly in harmony with ancient Vastu Shastra principles.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Vastu-aligned zoning</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Natural ventilation optimization</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Local municipal sanction drawings</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Architectural%20Planning%20service." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<!-- Subtle Accent Line -->
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 2: Structural Design -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Structural Design</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Robust engineering blueprints and load-bearing calculations ensuring seismic resistance and generational durability.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Foundation engineering</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>RCC &amp; steel framing details</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>IS-code compliance</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Structural%20Design%20service." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 3: Interior Design -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="chair">chair</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Interior Design</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Modern, ergonomic residential and commercial interior spaces crafted with premium materials and custom finishes.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Modular kitchen planning</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>False ceiling designs</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Space optimization</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Interior%20Design%20service." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 4: 3D Elevation -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">3D Elevation</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Photorealistic 3D front and exterior elevations visualizing textures, colors, and lighting before laying a single brick.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Contemporary facade concepts</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Material palette previews</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Day &amp; night lighting renders</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%203D%20Elevation%20service." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 5: Building Construction -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="construction">construction</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Building Construction</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Complete turnkey building execution from earthwork excavation to final paint and handover.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Quality-tested materials</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>On-site supervision</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Milestone-based execution</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Building%20Construction%20service." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 6: Estimation & Evaluation -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="calculate">calculate</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Estimation &amp; Evaluation</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Transparent, itemized cost estimations and property evaluations preventing budget overruns.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Detailed BOQ generation</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Market price tracking</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Property valuation metrics</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Estimation%20and%20Evaluation%20service." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 7: Consultancy Services -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="gpp_good">gpp_good</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Consultancy Services</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Professional advisory on site feasibility, structural auditing, quality assurance, and project management.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>On-site quality audits</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Contractor oversight</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Regulatory compliance checks</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Consultancy%20Services." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+<!-- Card 8: Real Estate Solutions -->
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+<div class="w-12 h-12 bg-secondary-container/20 text-secondary rounded-xl flex items-center justify-center mb-6 shrink-0 transition-colors group-hover:bg-secondary group-hover:text-on-secondary">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Real Estate Solutions</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">
+                        Strategic guidance on land acquisition, layout planning, and developmental potential across the region.
+                    </p>
+<div class="space-y-2 mb-8">
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Plot verification</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Developmental feasibility</span>
+</div>
+<div class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant/80 text-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<span>Investment ROI advisory</span>
+</div>
+</div>
+<a class="mt-auto inline-flex items-center text-secondary font-label-sm text-label-sm hover:text-on-secondary-fixed-variant group/link w-fit" href="https://wa.me/918123758878?text=Hello%20KRV%20Builders,%20I%20am%20interested%20in%20your%20Real%20Estate%20Solutions." rel="noopener noreferrer" target="_blank">
+                        Quick Enquire 
+                        <span class="material-symbols-outlined text-[18px] ml-1 group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+</div>
+</div>
+</section>
+<!-- Bottom Banner -->
+<section class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-16">
+<div class="bg-primary-container rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+<!-- Background texture placeholder (using gradient instead of image as requested) -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container to-tertiary-container opacity-90 z-0"></div>
+<div class="relative z-10 flex flex-col items-center">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-primary mb-8 max-w-2xl">
+                        Need a customized service package or custom floor plan consultation?
+                    </h2>
+<div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+<a class="inline-flex items-center justify-center bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-sm text-label-sm px-8 py-4 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5" href="/contact">
+                            Book a Free Site Consultation
+                        </a>
+<a class="inline-flex items-center justify-center bg-transparent border-2 border-secondary text-secondary hover:bg-secondary hover:text-on-secondary font-label-sm text-label-sm px-8 py-4 rounded-xl transition-all" href="tel:+918123758878">
+                            Speak with an Engineer: +91 8123758878
+                        </a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-outline-variant bg-surface-container-lowest dark:bg-tertiary-container mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop py-20 max-w-max-width mx-auto">
+<!-- Brand Column -->
+<div class="md:col-span-1">
+<span class="font-headline-md text-headline-md text-primary dark:text-on-tertiary-fixed mb-4 block">
+                    KRV BUILDERS
+                </span>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 mb-6">
+                    © 2024 KRV Builders &amp; Developers. All architectural rights reserved.
+                </p>
+</div>
+<!-- Links Column (Empty for spacing to match JSON grid structure) -->
+<div class="md:col-span-1"></div>
+<!-- Links Column -->
+<div class="md:col-span-2 flex flex-col md:flex-row gap-6 md:justify-end font-body-md text-body-md">
+<a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Licensing</a>
+<a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Sitemap</a>
+</div>
+</div>
+</footer>
+</body></html>

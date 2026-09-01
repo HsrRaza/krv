@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact Us - KRV Builders &amp; Developers</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#b9c7df",
+                    "surface": "#f7f9fb",
+                    "surface-bright": "#f7f9fb",
+                    "surface-container": "#eceef0",
+                    "on-tertiary-container": "#77859a",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-tint": "#565e74",
+                    "on-primary-fixed": "#131b2e",
+                    "on-surface-variant": "#45464d",
+                    "on-surface": "#191c1e",
+                    "on-secondary-fixed": "#2f1500",
+                    "inverse-primary": "#bec6e0",
+                    "tertiary": "#000000",
+                    "primary": "#000000",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#c6c6cd",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#76777d",
+                    "primary-container": "#131b2e",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary": "#904d00",
+                    "primary-fixed": "#dae2fd",
+                    "tertiary-fixed": "#d5e3fc",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-primary": "#ffffff",
+                    "surface-container-low": "#f2f4f6",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#fe932c",
+                    "on-tertiary-fixed": "#0d1c2e",
+                    "background": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed-dim": "#ffb77d",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#6e3900",
+                    "on-background": "#191c1e",
+                    "secondary-fixed": "#ffdcc3",
+                    "tertiary-container": "#0d1c2e",
+                    "on-primary-container": "#7c839b",
+                    "on-secondary-container": "#663500",
+                    "on-tertiary-fixed-variant": "#3a485b",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#e0e3e5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "max-width": "1280px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "base": "8px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Montserrat"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-xl": [
+                            "Montserrat"
+                    ],
+                    "headline-lg": [
+                            "Montserrat"
+                    ],
+                    "headline-lg-mobile": [
+                            "Montserrat"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-xl": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .toast-enter {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        .toast-enter-active {
+            transform: translateY(0);
+            opacity: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toast-exit {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast-exit-active {
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .accordion-content.active {
+            max-height: 500px; /* Arbitrary large value */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface/95 dark:bg-surface-container-high/95 backdrop-blur-md fixed top-0 w-full border-b border-outline-variant/30 shadow-sm z-50 transition-all duration-300">
+<div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<div class="font-headline-md text-headline-md tracking-tighter text-primary dark:text-on-primary-fixed">
+                KRV BUILDERS
+            </div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:text-secondary-fixed-variant transition-all duration-300" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:text-secondary-fixed-variant transition-all duration-300" href="#">About</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:text-secondary-fixed-variant transition-all duration-300" href="#">Services</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:text-secondary-fixed-variant transition-all duration-300" href="#">Gallery</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-secondary font-label-sm text-label-sm hover:text-secondary-fixed-variant transition-all duration-300" href="#">Contact</a>
+</nav>
+<button class="hidden md:flex bg-primary text-on-primary px-6 py-2 rounded font-label-sm text-label-sm scale-95 active:scale-90 transition-transform shadow-sm hover:shadow-md border border-transparent hover:border-secondary-container">
+                Get Free Quote
+            </button>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-primary p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-28 pb-20">
+<!-- Header Section -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto mb-16 text-center">
+<h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary mb-6">
+                Let’s Discuss Your Next Construction Project
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mx-auto">
+                Have a site to develop, planning a new home, or need structural consultancy? Reach out to our team in Ramanagara.
+            </p>
+</section>
+<!-- Main Contact Grid -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto mb-24">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+<!-- Column A: Info -->
+<div class="flex flex-col gap-8">
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-[0_20px_40px_rgba(15,23,42,0.05)] relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container transform scale-y-0 group-hover:scale-y-100 transition-transform origin-top duration-300"></div>
+<h2 class="font-headline-md text-headline-md text-primary mb-6">Contact Information</h2>
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">call</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Phone</div>
+<div class="flex flex-col gap-1">
+<a class="font-body-md text-body-md text-primary hover:text-secondary transition-colors font-medium" href="tel:+918123758878">+91 8123758878</a>
+<a class="font-body-md text-body-md text-primary hover:text-secondary transition-colors font-medium" href="tel:+918660256319">+91 8660256319</a>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">mail</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Email</div>
+<a class="font-body-md text-body-md text-primary hover:text-secondary transition-colors font-medium" href="mailto:krvbuildersndevelopers@gmail.com">krvbuildersndevelopers@gmail.com</a>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">location_on</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Head Office</div>
+<p class="font-body-md text-body-md text-primary font-medium leading-relaxed">
+                                        #1/4, 1st Floor, Above Canara Bank ATM,<br/>
+                                        Extension Mohalla, Ramanagara - 562159,<br/>
+                                        Karnataka.
+                                    </p>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant">
+<div class="inline-flex items-center gap-2 bg-surface-container px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">schedule</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Mon-Fri 9:00 AM – 8:00 PM, Sat &amp; Sun By Appointment Only</span>
+</div>
+</div>
+<div class="mt-8 flex flex-wrap gap-4">
+<a class="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded font-label-sm text-label-sm shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+                                Chat on WhatsApp
+                            </a>
+<a class="inline-flex items-center gap-2 border border-primary text-primary px-6 py-3 rounded font-label-sm text-label-sm hover:bg-surface-container transition-all hover:-translate-y-0.5" href="tel:+918123758878">
+<span class="material-symbols-outlined">phone_in_talk</span>
+                                Call Office
+                            </a>
+</div>
+</div>
+</div>
+<!-- Column B: Form -->
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
+<h2 class="font-headline-md text-headline-md text-primary mb-6">Send an Enquiry</h2>
+<form class="space-y-6" id="contactForm">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="fullName">Full Name</label>
+<input class="w-full bg-surface-container-low border-outline-variant text-on-surface rounded focus:ring-secondary focus:border-secondary transition-colors" id="fullName" name="fullName" required="" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="phone">Phone Number / WhatsApp</label>
+<input class="w-full bg-surface-container-low border-outline-variant text-on-surface rounded focus:ring-secondary focus:border-secondary transition-colors" id="phone" name="phone" required="" type="tel"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="email">Email Address</label>
+<input class="w-full bg-surface-container-low border-outline-variant text-on-surface rounded focus:ring-secondary focus:border-secondary transition-colors" id="email" name="email" required="" type="email"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="service">Service Required</label>
+<select class="w-full bg-surface-container-low border-outline-variant text-on-surface rounded focus:ring-secondary focus:border-secondary transition-colors" id="service" name="service" required="">
+<option disabled="" selected="" value="">Select a service...</option>
+<option value="Architectural Planning">Architectural Planning</option>
+<option value="Construction">Construction</option>
+<option value="Structural Engineering">Structural Engineering</option>
+<option value="3D Elevation">3D Elevation</option>
+<option value="Interior Design">Interior Design</option>
+<option value="Estimation">Estimation &amp; Costing</option>
+<option value="Consultancy">Consultancy</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="details">Project Details</label>
+<textarea class="w-full bg-surface-container-low border-outline-variant text-on-surface rounded focus:ring-secondary focus:border-secondary transition-colors resize-y" id="details" name="details" required="" rows="4"></textarea>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded font-label-sm text-label-sm hover:bg-surface-tint transition-colors relative overflow-hidden group" type="submit">
+<span class="relative z-10 flex items-center justify-center gap-2">
+                                Send Message
+                                <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
+</span>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-secondary-container transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+</button>
+</form>
+</div>
+</div>
+</section>
+<!-- Map Section -->
+<section class="relative w-full h-[500px] mb-24 bg-surface-container-high overflow-hidden">
+<!-- Simulated Map Image (Would be an iframe in reality) -->
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="A highly detailed overhead view of a clean, modern city map focusing on Ramanagara, Karnataka, rendered in a bright, light-mode minimalist style. The map features subtle, desaturated roads and muted green parks, accented by sharp, precise dark gray architectural markers. The lighting implies a clear daytime setting, maintaining a crisp, professional corporate aesthetic suitable for a construction firm's contact page." data-location="Ramanagara, Karnataka" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC8Hrv24x6Ur7TkfPeAmx8ql1LFCQsk3Kcp3s57E8ispuf3FkaRYXFUB7QEDrs2Xq9irc1_wuHiB07owZYYWqi9Koy5IEaDPvfCS0v-c7vEd1nSJMFnvd71Nq_y4_oQCjfBJxEdHGz1BKCP2hr6Zd2yBZ1Ahr0ErvX5TAEVmGQ824yQoiesQEK_h3KE7sGFhaZQzS4pPyetcNrJ_DCuv7RYeWrl8aRHOJEUtKIT1skoMXy3Gax6Z8fl')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-margin-mobile md:left-margin-desktop z-10 max-w-sm">
+<div class="bg-surface-container-lowest/95 backdrop-blur p-6 rounded-xl border border-outline-variant shadow-lg">
+<div class="flex items-start gap-4 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">pin_drop</span>
+<div>
+<h3 class="font-label-sm text-label-sm font-bold text-primary mb-1">Head Office</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Located right above Canara Bank ATM in Extension Mohalla</p>
+</div>
+</div>
+<a class="block w-full text-center border border-outline text-primary py-2 rounded font-label-sm text-label-sm hover:bg-surface-container transition-colors" href="#">
+                        Open in Google Maps
+                    </a>
+</div>
+</div>
+</section>
+<!-- FAQ Accordion -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto mb-24">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary text-center mb-12">Frequently Asked Questions</h2>
+<div class="space-y-4">
+<!-- FAQ Item 1 -->
+<div class="border border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest">
+<button class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none faq-toggle hover:bg-surface-container-low transition-colors">
+<span class="font-body-lg text-body-lg text-primary font-medium">Do you provide free initial site visits in Ramanagara and nearby areas?</span>
+<span class="material-symbols-outlined text-secondary transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-content px-6 bg-surface-container-lowest text-on-surface-variant font-body-md">
+<div class="py-4 border-t border-outline-variant/30">
+                            Yes, we offer complimentary initial site visits for projects located within Ramanagara and its immediate surrounding areas. This allows our team to assess the site conditions and discuss your vision before providing a preliminary consultation.
+                        </div>
+</div>
+</div>
+<!-- FAQ Item 2 -->
+<div class="border border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest">
+<button class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none faq-toggle hover:bg-surface-container-low transition-colors">
+<span class="font-body-lg text-body-lg text-primary font-medium">Can you prepare Vastu-compliant architectural plans for custom plot sizes?</span>
+<span class="material-symbols-outlined text-secondary transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-content px-6 bg-surface-container-lowest text-on-surface-variant font-body-md">
+<div class="py-4 border-t border-outline-variant/30">
+                            Absolutely. Our architectural team specializes in designing functional, modern homes that adhere strictly to Vastu Shastra principles, tailored specifically to the dimensions and orientation of your custom plot.
+                        </div>
+</div>
+</div>
+<!-- FAQ Item 3 -->
+<div class="border border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest">
+<button class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none faq-toggle hover:bg-surface-container-low transition-colors">
+<span class="font-body-lg text-body-lg text-primary font-medium">How do you handle estimation and material budgeting?</span>
+<span class="material-symbols-outlined text-secondary transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-content px-6 bg-surface-container-lowest text-on-surface-variant font-body-md">
+<div class="py-4 border-t border-outline-variant/30">
+                            We provide transparent, itemized estimations detailing material costs, labor, and structural requirements. We work closely with you to establish a realistic budget, ensuring high-quality construction materials are sourced efficiently without hidden costs.
+                        </div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-tertiary-container w-full border-t border-outline-variant shadow-none">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop py-20 max-w-max-width mx-auto">
+<div class="col-span-1 md:col-span-2">
+<div class="font-headline-md text-headline-md text-primary dark:text-on-tertiary-fixed mb-4">
+                    KRV BUILDERS
+                </div>
+<p class="text-on-surface-variant dark:text-on-tertiary-container/70 font-body-md text-body-md mb-6 max-w-sm">
+                    Delivering architectural precision and high-trust craftsmanship in Ramanagara and beyond.
+                </p>
+<div class="text-on-surface dark:text-on-tertiary-container font-body-md text-body-md text-sm">
+                    © 2024 KRV Builders &amp; Developers. All architectural rights reserved.
+                </div>
+</div>
+<div class="col-span-1">
+<h4 class="font-label-sm text-label-sm text-primary dark:text-on-tertiary-fixed mb-4 uppercase tracking-wider">Legal</h4>
+<ul class="space-y-3">
+<li><a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100 transition-opacity" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div class="col-span-1">
+<h4 class="font-label-sm text-label-sm text-primary dark:text-on-tertiary-fixed mb-4 uppercase tracking-wider">Quick Links</h4>
+<ul class="space-y-3">
+<li><a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100 transition-opacity" href="#">Licensing</a></li>
+<li><a class="text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100 transition-opacity" href="#">Sitemap</a></li>
+</ul>
+</div>
+</div>
+</footer>
+<!-- Toast Notification -->
+<div class="fixed bottom-4 right-4 z-50 flex items-center gap-3 bg-surface-container-lowest border-l-4 border-secondary-container p-4 rounded shadow-lg transform translate-y-full opacity-0 pointer-events-none transition-all duration-300" id="toast">
+<span class="material-symbols-outlined text-secondary-container">check_circle</span>
+<div>
+<h4 class="font-label-sm text-label-sm text-primary">Message Sent</h4>
+<p class="text-sm text-on-surface-variant font-body-md">Redirecting to WhatsApp...</p>
+</div>
+</div>
+<!-- Scripts -->
+<script>
+        // Form Submission Logic
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('fullName').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const service = document.getElementById('service').value;
+            const details = document.getElementById('details').value;
+            
+            const message = `Hello KRV Builders,\n\nI would like to enquire about your services.\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nService: ${service}\nDetails: ${details}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/918123758878?text=${encodedMessage}`;
+
+            // Show Toast
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-full', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank');
+                // Hide Toast after redirect
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-full', 'opacity-0');
+                    e.target.reset(); // Reset form
+                }, 1000);
+            }, 1500);
+        });
+
+        // FAQ Accordion Logic
+        document.querySelectorAll('.faq-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('.material-symbols-outlined');
+                const isActive = content.classList.contains('active');
+
+                // Close all others
+                document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.faq-toggle .material-symbols-outlined').forEach(i => i.style.transform = 'rotate(0deg)');
+
+                if (!isActive) {
+                    content.classList.add('active');
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+    </script>
+</body></html>

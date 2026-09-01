@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KRV Builders | Project Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#0d1c2e",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#77859a",
+                        "on-surface": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed": "#d5e3fc",
+                        "on-tertiary-fixed-variant": "#3a485b",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-container": "#663500",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#2f1500",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#0d1c2e",
+                        "secondary-container": "#fe932c",
+                        "tertiary-fixed-dim": "#b9c7df",
+                        "surface-container": "#eceef0",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary": "#000000",
+                        "on-error-container": "#93000a",
+                        "primary": "#000000",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-container": "#7c839b",
+                        "background": "#f7f9fb",
+                        "secondary-fixed": "#ffdcc3",
+                        "inverse-primary": "#bec6e0",
+                        "outline": "#76777d",
+                        "secondary-fixed-dim": "#ffb77d",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dadc",
+                        "primary-container": "#131b2e",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-surface-variant": "#45464d",
+                        "secondary": "#904d00",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "max-width": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "headline-xl": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .masonry { column-count: 1; column-gap: 1.5rem; }
+        @media (min-width: 640px) { .masonry { column-count: 2; } }
+        @media (min-width: 1024px) { .masonry { column-count: 3; } }
+        @media (min-width: 1280px) { .masonry { column-count: 4; } }
+        .masonry-item { break-inside: avoid; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface/95 dark:bg-surface-container-high/95 backdrop-blur-md fixed top-0 w-full border-b border-outline-variant/30 shadow-sm z-50 transition-all duration-300">
+<div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<a class="font-headline-md text-headline-md tracking-tighter text-primary dark:text-on-primary-fixed" href="#">KRV BUILDERS</a>
+<!-- Desktop Nav -->
+<div class="hidden md:flex items-center space-x-gutter">
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-secondary-fixed-variant transition-colors duration-300" href="#">Home</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-secondary-fixed-variant transition-colors duration-300" href="#">About</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-secondary-fixed-variant transition-colors duration-300" href="#">Services</a>
+<a class="font-label-sm text-label-sm text-primary dark:text-primary-fixed font-bold border-b-2 border-secondary pb-1" href="#">Gallery</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-primary-fixed-variant hover:text-secondary-fixed-variant transition-colors duration-300" href="#">Contact</a>
+</div>
+<button class="hidden md:flex bg-tertiary-container text-on-tertiary-container px-6 py-2.5 rounded hover:bg-tertiary hover:text-on-tertiary transition-colors font-label-sm text-label-sm items-center gap-2">
+<span>Get Free Quote</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-on-surface p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<main class="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto w-full">
+<!-- Header Section -->
+<header class="text-center max-w-3xl mx-auto mb-16">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-6">Project Portfolio &amp; Construction Gallery</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Explore our commitment to architectural excellence. From foundational concrete framework to stunning 3D elevations and refined interior finishes, witness the milestones of our craftsmanship.</p>
+</header>
+<!-- Category Filters -->
+<div class="flex flex-wrap justify-center gap-4 mb-12">
+<button class="px-6 py-2 rounded-full border border-secondary text-secondary font-label-sm text-label-sm hover:bg-secondary/10 transition-colors">All Projects</button>
+<button class="px-6 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-colors">Building Construction</button>
+<button class="px-6 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-colors">3D Elevations</button>
+<button class="px-6 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-colors">Interior Design</button>
+<button class="px-6 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-colors">Architectural &amp; Vastu Plans</button>
+</div>
+<!-- Masonry Grid -->
+<div class="masonry">
+<!-- Item 1 -->
+<div class="masonry-item relative group rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-auto object-cover" data-alt="A striking modern dual-facade villa design rendered in highly realistic 3D, featuring clean geometric lines, large glass windows, and a mix of white stucco and dark gray stone cladding, bathed in warm sunset lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWUKq5374Y1tf4j4sejCM2nvRhgSub9YJxCkxh77qaft1gBmKIgSH5EYU6C5NnnsqWY2cLoU8ArNJNRjmdqetSOEO6jNjXsGM9-IjAJU5E-Azvu-f4R9Os6wl7rmIr4h4IPfYYm77sx9UTlz4SeOosJnwrDp9v5JdU-pZJTcYkfW0xblpk__XDpxEyYpdou5il72Z4hOiJ1oIxw1XjrYfe80Ho0_IphiJRn_gssxEArXyHSsrVzyzr0LZ7kb8q6Fs6ww"/>
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-bold uppercase tracking-wider mb-2">3D Elevations</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-1">Modern Dual-Facade Villa</h3>
+<p class="font-body-md text-body-md text-surface-variant mb-4 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Bangalore North</p>
+<div class="flex gap-3">
+<button class="bg-surface/20 hover:bg-surface/40 backdrop-blur text-on-primary p-2 rounded transition-colors"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded font-label-sm text-label-sm flex items-center gap-2 hover:bg-secondary/90 transition-colors"><span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp</button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="masonry-item relative group rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-auto object-cover" data-alt="A construction site showing the robust reinforced concrete framework of a residential building, with exposed steel rebar and freshly poured concrete columns under a clear blue sky, emphasizing structural integrity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNrsM8ChJLwQmUna28Tbcv8zQelGGI2dugVfBZRTTHoNk2WOLwlXILah9icOlJe0OtHwGe3DhgPTupu9WsyUgFu9ScdBytfAKfCANFOjnl0gregdGbZlXDQrf72MZrkfZs0smAouwqJamEdEsAu1HWQq5LrPbYNF9GwrIL6U8CMIeNewzxenaqWHHRRpXdG5gZjWGuAXB6H7z3Bff6aML4OiBmnYZvSFAF6KDZfhq7Amxov0rcR4pseg-669XRrBrcJQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-bold uppercase tracking-wider mb-2">Building Construction</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-1">Reinforced Concrete Framework</h3>
+<p class="font-body-md text-body-md text-surface-variant mb-4 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Mysore Road Project</p>
+<div class="flex gap-3">
+<button class="bg-surface/20 hover:bg-surface/40 backdrop-blur text-on-primary p-2 rounded transition-colors"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded font-label-sm text-label-sm flex items-center gap-2 hover:bg-secondary/90 transition-colors"><span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp</button>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="masonry-item relative group rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-auto object-cover" data-alt="A luxurious open-concept modular kitchen design featuring sleek matte black cabinetry, a large white marble island with subtle grey veining, and warm pendant lighting creating a sophisticated and inviting culinary space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5qttJWAJkJtAprcTFp7jkfiehSUDtwV68Vz7FQTHbakQDKLCNpMIXS8z0I2gBg496jQPrqz83btyCqHZH-_D8AJ9DI3CLmQgcisVFJFWvaxu6m7PO2MJCxvVcuCGN0cY0K_SUV3lm3qmr9FM3l40CBwbnrFbZsHGSG-z_fDRCjwUKEZ1zrcX3i6Mp6jdirFV-sshqQXCLI4AFJUSIn9oQ5nHB1RdtLo_BBx4DVjbO2d2-VhXnZiaMkgJZ9CRu7h48vg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-bold uppercase tracking-wider mb-2">Interior Design</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-1">Open-Concept Modular Kitchen</h3>
+<p class="font-body-md text-body-md text-surface-variant mb-4 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Indiranagar Residence</p>
+<div class="flex gap-3">
+<button class="bg-surface/20 hover:bg-surface/40 backdrop-blur text-on-primary p-2 rounded transition-colors"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded font-label-sm text-label-sm flex items-center gap-2 hover:bg-secondary/90 transition-colors"><span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp</button>
+</div>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="masonry-item relative group rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-auto object-cover" data-alt="A highly detailed architectural blueprint of a 40x60 residential plot, laid out on a clean white desk, highlighting Vastu-aligned room placements, precise structural dimensions, and careful spatial planning." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArCMng8FBoTkW_6vTEM25F2nYLe1WLFyu4uIQNIjt7z0qp3v9OLRDMwQ9BdCZuhi8xFq3wjd095kvTiaLUA_RmRskZ9t_u49jKUeYBsYFwz5xOx2-aQCG7ZT81m_3U4xaQCYH7b8qSBt0OIMHgTBVqgWMqQ5sSFD7E0PbHNDHa_OJDxRxFRyYSlaAbBsAQvs5LSTG9kt1lcKN6vUd5XlMJ6seB9JRatKkj_m-62vmvb6MRQ0tqRTDxHQRquXu4WD4ACQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-bold uppercase tracking-wider mb-2">Architectural &amp; Vastu Plans</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-1">Vastu-Aligned 40x60 Blueprint</h3>
+<p class="font-body-md text-body-md text-surface-variant mb-4 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> JP Nagar Layout</p>
+<div class="flex gap-3">
+<button class="bg-surface/20 hover:bg-surface/40 backdrop-blur text-on-primary p-2 rounded transition-colors"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded font-label-sm text-label-sm flex items-center gap-2 hover:bg-secondary/90 transition-colors"><span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp</button>
+</div>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="masonry-item relative group rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-auto object-cover" data-alt="The structural skeleton of a multi-story commercial complex under construction, showcasing a vast network of steel beams and concrete pillars against an overcast sky, highlighting scale and engineering precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD3JT8lOYObOSUhcNxE_GMF_Hh9Zqf6U4TBEM9wdAbGva-3G57jUnMG8KHCzcnSsvxNn6-EtYmh2-OB_lXNH78Zc-B5LcJ3URX9W-e_Xrs2wGMeybnDh0ir4OHrmGa1Zx8cAnCa_DpzqJLRP_VhxxdYxY1BCVy6XFvM56NGB616jhq1HMQHOEbo0Px6JLHQ_9gr6rhB2nmGzxR_X2GKrTEFi6Y2g5zHXfgtwLgLtRw0wx_y9JLfkf1jH-Sye2rxMOMlA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-bold uppercase tracking-wider mb-2">Building Construction</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-1">Commercial Complex Skeleton</h3>
+<p class="font-body-md text-body-md text-surface-variant mb-4 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Electronic City Phase 1</p>
+<div class="flex gap-3">
+<button class="bg-surface/20 hover:bg-surface/40 backdrop-blur text-on-primary p-2 rounded transition-colors"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded font-label-sm text-label-sm flex items-center gap-2 hover:bg-secondary/90 transition-colors"><span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-tertiary-container w-full border-t border-outline-variant mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop py-12 max-w-max-width mx-auto">
+<div class="col-span-1 md:col-span-1">
+<a class="font-headline-md text-headline-md text-primary dark:text-on-tertiary-fixed mb-4 block" href="#">KRV BUILDERS</a>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 mt-4">Crafting structural elegance and enduring quality in every project we undertake.</p>
+</div>
+<div class="col-span-1 md:col-span-3 flex flex-col md:flex-row justify-end items-start md:items-center gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors" href="#">Licensing</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 hover:text-secondary transition-colors" href="#">Sitemap</a>
+</div>
+</div>
+<div class="px-margin-mobile md:px-margin-desktop pb-8 max-w-max-width mx-auto">
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-on-tertiary-container/70 text-center md:text-left">© 2024 KRV Builders &amp; Developers. All architectural rights reserved.</p>
+</div>
+</footer>
+</body></html>
