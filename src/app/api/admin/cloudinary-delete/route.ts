@@ -11,68 +11,117 @@ cloudinary.config({
   secure: true,
 });
 
+// Simple in-memory sliding window rate limiter
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 30;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  record.count += 1;
+  return record.count > MAX_REQUESTS_PER_WINDOW;
+}
+
+const PUBLIC_ID_REGEX = /^[a-zA-Z0-9_\-\/]+$/;
+
+async function checkAuth(request: Request): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const cookieHeader = request.headers.get("cookie") || "";
+  const hasAdminCookie = cookieHeader.includes("krv_admin_session=true");
+
+  return !!(user || hasAdminCookie);
+}
+
 export async function POST(request: Request) {
   try {
-    // 1. Verify caller authentication via Supabase or admin cookie
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // 1. Rate Limiting Check
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
 
-    const cookieHeader = request.headers.get("cookie") || "";
-    const hasAdminCookie = cookieHeader.includes("krv_admin_session=true");
-
-    if (!user && !hasAdminCookie) {
+    // 2. Authentication Verification
+    const isAuthenticated = await checkAuth(request);
+    if (!isAuthenticated) {
       return NextResponse.json(
         { error: "Unauthorized access." },
         { status: 401 }
       );
     }
 
-    // 2. Parse request payload (accepts single string or array of URLs / public_ids)
-    const body = await request.json();
-    const { url, urls, public_id, public_ids } = body as {
-      url?: string;
-      urls?: string[];
-      public_id?: string;
-      public_ids?: string[];
-    };
-
-    const idsToDelete: string[] = [];
-
-    if (public_id && typeof public_id === "string") {
-      idsToDelete.push(public_id);
-    }
-
-    if (public_ids && Array.isArray(public_ids)) {
-      idsToDelete.push(...public_ids);
-    }
-
-    if (url && typeof url === "string") {
-      const parsedId = getPublicIdFromUrl(url);
-      if (parsedId) idsToDelete.push(parsedId);
-    }
-
-    if (urls && Array.isArray(urls)) {
-      urls.forEach((u) => {
-        const parsedId = getPublicIdFromUrl(u);
-        if (parsedId) idsToDelete.push(parsedId);
-      });
-    }
-
-    // Deduplicate public IDs
-    const uniqueIds = Array.from(new Set(idsToDelete));
-
-    if (uniqueIds.length === 0) {
+    // 3. Request Body Parsing & Sanitization
+    const body = await request.json().catch(() => null);
+    if (!body) {
       return NextResponse.json(
-        { message: "No valid Cloudinary assets to delete." },
+        { error: "Invalid JSON payload." },
         { status: 400 }
       );
     }
 
-    // 3. Delete assets from Cloudinary
+    const { url, urls, public_id, public_ids } = body as {
+      url?: unknown;
+      urls?: unknown;
+      public_id?: unknown;
+      public_ids?: unknown;
+    };
+
+    const rawIds: string[] = [];
+
+    if (typeof public_id === "string" && public_id.trim()) {
+      rawIds.push(public_id.trim());
+    }
+
+    if (Array.isArray(public_ids)) {
+      public_ids.forEach((id) => {
+        if (typeof id === "string" && id.trim()) {
+          rawIds.push(id.trim());
+        }
+      });
+    }
+
+    if (typeof url === "string" && url.trim()) {
+      const parsedId = getPublicIdFromUrl(url.trim());
+      if (parsedId) rawIds.push(parsedId);
+    }
+
+    if (Array.isArray(urls)) {
+      urls.forEach((u) => {
+        if (typeof u === "string" && u.trim()) {
+          const parsedId = getPublicIdFromUrl(u.trim());
+          if (parsedId) rawIds.push(parsedId);
+        }
+      });
+    }
+
+    // Filter and sanitize: must match PUBLIC_ID_REGEX to prevent injection / path traversal
+    const sanitizedIds = Array.from(new Set(rawIds)).filter((id) =>
+      PUBLIC_ID_REGEX.test(id)
+    );
+
+    if (sanitizedIds.length === 0) {
+      return NextResponse.json(
+        { error: "No valid, sanitized Cloudinary public_ids provided." },
+        { status: 400 }
+      );
+    }
+
+    // 4. Delete assets via Cloudinary SDK
     const results = await Promise.all(
-      uniqueIds.map((id) =>
+      sanitizedIds.map((id) =>
         cloudinary.uploader.destroy(id).catch((err) => ({
           public_id: id,
           error: err.message,
@@ -82,7 +131,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      deleted_ids: uniqueIds,
+      deleted_ids: sanitizedIds,
       results,
     });
   } catch (error: any) {
@@ -93,3 +142,21 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// Method handling for unsupported HTTP methods
+export async function GET() {
+  return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
+}
+
+export async function PUT() {
+  return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
+}
+
+export async function DELETE() {
+  return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
+}
+
+export async function PATCH() {
+  return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
+}
+
