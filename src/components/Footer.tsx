@@ -1,126 +1,153 @@
+"use client";
+
 import Link from "next/link";
-import { Building2, Phone, Mail, MapPin, Clock, MessageSquare, ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Building2, Phone, Mail, MapPin, ArrowRight, ShieldCheck, HardHat } from "lucide-react";
 
 export default function Footer() {
-  return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 pt-16 pb-12 relative overflow-hidden">
-      {/* Background ambient light */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+  const pathname = usePathname();
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
-          {/* Company Info */}
-          <div className="flex flex-col gap-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 shadow-md">
-                <Building2 className="w-6 h-6 stroke-[2.2]" />
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+  return (
+    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 pt-16 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+          {/* Brand & Overview */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-auto flex items-center justify-center overflow-hidden rounded-xl bg-white p-1 border border-slate-700 shadow-md">
+                <img src="/logo.png" alt="KRV Builders Logo" className="h-full w-auto object-contain max-h-10" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-extrabold tracking-tight text-white font-sans">
-                  KRV <span className="text-amber-500">BUILDERS</span>
+                <span className="text-lg font-extrabold text-white tracking-tight leading-tight">
+                  KRV BUILDERS
                 </span>
-                <span className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">
+                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
                   & Developers • Ramanagara
                 </span>
               </div>
-            </Link>
+            </div>
 
-            <p className="text-sm text-slate-400 leading-relaxed mt-1">
-              Building dreams with precision, structural strength, and trust for over 14 years in Ramanagara and surrounding regions.
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Leading architectural, civil construction, and interior design firm in Ramanagara. Delivering 100% Vastu-compliant structures, RCC engineering, photorealistic 3D elevations, and turnkey commercial & residential builds.
             </p>
 
-            <div className="pt-2 flex items-center gap-3">
-              <a
-                href="https://wa.me/918123758878"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 rounded-lg hover:bg-emerald-900/60 transition"
-              >
-                <MessageSquare className="w-4 h-4 fill-emerald-400/20" />
-                WhatsApp Direct
-              </a>
+            <div className="flex items-center gap-2 text-xs text-amber-400 font-semibold bg-amber-500/10 px-3.5 py-2 rounded-xl border border-amber-500/20 w-fit">
+              <HardHat className="w-4 h-4 text-amber-400" />
+              <span>14+ Years of Proven Architectural Excellence</span>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-col gap-3">
-            <h4 className="text-white font-bold text-base tracking-wide flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              Quick Links
+          {/* Quick Sitemap */}
+          <div>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">
+              Sitemap
             </h4>
-            <ul className="flex flex-col gap-2.5 text-sm text-slate-400 mt-1">
-              {[
-                { name: "Home", href: "/" },
-                { name: "About Us", href: "/about" },
-                { name: "Our Services", href: "/services" },
-                { name: "Project Gallery", href: "/gallery" },
-                { name: "Contact & Enquiry", href: "/contact" },
-              ].map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-amber-400 transition-colors flex items-center gap-1.5 group"
-                  >
-                    <ArrowUpRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition" />
-                    <span>{item.name}</span>
-                  </Link>
-                </li>
-              ))}
+            <ul className="space-y-2.5 text-xs font-semibold text-slate-400">
+              <li>
+                <Link href="/" className="hover:text-amber-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-amber-500" /> Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-amber-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-amber-500" /> Our Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/work-in-progress" className="hover:text-amber-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-amber-500" /> Live Job Sites
+                </Link>
+              </li>
+              <li>
+                <Link href="/gallery" className="hover:text-amber-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-amber-500" /> Photo Gallery
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-amber-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-amber-500" /> About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-amber-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-amber-500" /> Contact & Location
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Core Services */}
-          <div className="flex flex-col gap-3">
-            <h4 className="text-white font-bold text-base tracking-wide flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              Our Specializations
+          {/* Services List */}
+          <div>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">
+              Core Services
             </h4>
-            <ul className="flex flex-col gap-2 text-sm text-slate-400 mt-1">
-              <li>• Vastu-Compliant Architectural Planning</li>
-              <li>• Structural Engineering & RCC Framing</li>
-              <li>• Turnkey Building Construction</li>
-              <li>• Premium Interior Design & Kitchens</li>
-              <li>• Photorealistic 3D Elevation</li>
-              <li>• Estimation & Municipal Sanctioning</li>
+            <ul className="space-y-2 text-xs font-medium text-slate-400">
+              <li>Architectural Planning & Vastu</li>
+              <li>Structural Design & RCC</li>
+              <li>Turnkey Building Construction</li>
+              <li>Photorealistic 3D Elevation</li>
+              <li>Custom Interior Design</li>
+              <li>Estimation & Evaluation</li>
+              <li>Civil Consultancy</li>
+              <li>Real Estate Solutions</li>
             </ul>
           </div>
 
-          {/* Contact Metadata */}
-          <div className="flex flex-col gap-3">
-            <h4 className="text-white font-bold text-base tracking-wide flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              Head Office
+          {/* Direct Contact Links */}
+          <div>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">
+              Contact Info
             </h4>
-            <div className="flex flex-col gap-3 text-sm text-slate-400 mt-1">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                <span>#1/4, 1st Floor, Above Canara Bank ATM, Extension Mohalla, Ramanagara - 562159, Karnataka.</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                <a href="tel:+918123758878" className="hover:text-white transition">
-                  +91 8123758878 / 8660256319
+            <ul className="space-y-3 text-xs text-slate-400">
+              <li className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=1st+Floor,+Above+Canara+Bank+ATM,+Moti+Nagar+Extension,+Ramanagara,+Karnataka+562159"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-amber-400 transition"
+                >
+                  1st Floor, Above Canara Bank ATM, Moti Nagar Extension, Ramanagara, Karnataka 562159
                 </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-amber-500 shrink-0" />
-                <a href="mailto:krvbuildersndevelopers@gmail.com" className="hover:text-white transition truncate">
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="flex flex-col font-semibold">
+                  <a href="tel:+918123758878" className="hover:text-white transition">
+                    +91 8123758878
+                  </a>
+                  <a href="tel:+918660256319" className="hover:text-white transition">
+                    +91 8660256319
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Mail className="w-4 h-4 text-amber-400 shrink-0" />
+                <a
+                  href="mailto:krvbuildersndevelopers@gmail.com"
+                  className="hover:text-white transition truncate font-medium"
+                >
                   krvbuildersndevelopers@gmail.com
                 </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>Mon - Fri: 9am - 8pm (Sat-Sun Appt)</span>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom copyright bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <p>© {new Date().getFullYear()} KRV Builders & Developers. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <span>Structural Elegance & Precision</span>
+        {/* Footer Bottom Line & Legal Disclaimer */}
+        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div>
+            © {new Date().getFullYear()} KRV Builders & Developers. All rights reserved. Registered Office: Ramanagara, Karnataka.
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/admin/login" className="hover:text-amber-400 transition font-semibold">
+              Admin Portal Sign In
+            </Link>
+            <span>•</span>
+            <span>Quality • Transparency • Strength</span>
           </div>
         </div>
       </div>

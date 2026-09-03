@@ -4,15 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, Phone, Menu, X, ArrowRight, MessageSquare } from "lucide-react";
-
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "About Us", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Gallery", href: "/gallery" },
-  { name: "Contact Us", href: "/contact" },
-];
+import { Building2, Phone, Menu, X, ArrowRight, MessageSquare, ShieldCheck } from "lucide-react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -21,7 +13,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 15) {
+      if (window.scrollY > 20) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -31,129 +23,148 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "Work In Progress", href: "/work-in-progress" },
+    { name: "Gallery", href: "/gallery" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm py-3"
-          : "bg-white/95 backdrop-blur-md border-b border-slate-200/60 shadow-sm py-4"
+          ? "bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm py-3"
+          : "bg-stone-50/90 backdrop-blur-sm border-b border-slate-200/50 py-4"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-md shadow-amber-600/20 group-hover:scale-105 transition-transform">
-            <Building2 className="w-6 h-6 stroke-[2.2]" />
+          <div className="h-12 w-auto flex items-center justify-center overflow-hidden rounded-xl bg-white p-1 border border-slate-200 shadow-sm group-hover:scale-105 transition duration-300">
+            <img src="/logo.png" alt="KRV Builders Logo" className="h-full w-auto object-contain max-h-10" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg sm:text-xl font-extrabold tracking-tight font-sans text-slate-900">
-              KRV <span className="text-amber-600">BUILDERS</span>
+            <span className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-tight">
+              KRV BUILDERS
             </span>
-            <span className="text-[10px] uppercase tracking-widest font-semibold text-slate-500">
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">
               & Developers • Ramanagara
             </span>
           </div>
         </Link>
 
-        {/* Desktop / Tablet Navigation */}
-        <nav className="hidden md:flex items-center gap-1 p-1.5 rounded-full bg-slate-100/90 border border-slate-200/80">
+        {/* Desktop Nav Links */}
+        <nav className="hidden lg:flex items-center gap-1 bg-stone-100/70 p-1.5 rounded-full border border-slate-200/80">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
-                key={link.href}
+                key={link.name}
                 href={link.href}
-                className={`relative px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
+                className={`px-4 py-2 rounded-full text-xs font-bold transition duration-200 ${
                   isActive
-                    ? "text-white font-bold"
-                    : "text-slate-700 hover:text-amber-600"
+                    ? "bg-amber-600 text-white shadow-sm"
+                    : "text-slate-700 hover:text-amber-600 hover:bg-white"
                 }`}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeNavPill"
-                    className="absolute inset-0 rounded-full bg-amber-600 shadow-sm"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10">{link.name}</span>
+                {link.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* Desktop / Laptop Actions */}
-        <div className="hidden lg:flex items-center gap-3">
+        {/* Action Buttons */}
+        <div className="hidden sm:flex items-center gap-2.5">
           <a
-            href="https://wa.me/918123758878"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full hover:bg-emerald-100 transition shadow-sm"
+            href="tel:+918123758878"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-stone-100 hover:bg-stone-200 border border-slate-200 transition"
           >
-            <MessageSquare className="w-3.5 h-3.5 fill-emerald-600/20 text-emerald-600" />
-            WhatsApp
+            <Phone className="w-3.5 h-3.5 text-amber-600" />
+            <span>+91 8123758878</span>
           </a>
+
           <Link
             href="/contact"
-            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-full shadow-md shadow-amber-600/20 hover:scale-105 transition"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-md shadow-amber-600/20 transition"
           >
-            <span>Enquire Now</span>
+            <span>Enquire</span>
             <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+
+          {/* Admin Login Button */}
+          <Link
+            href="/admin/login"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition shadow-sm"
+            title="Admin Login Portal"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+            <span>Admin</span>
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle Navigation"
-          className="md:hidden p-2.5 rounded-xl border bg-slate-100 border-slate-200 text-slate-900 hover:bg-slate-200 transition-colors"
+          className="lg:hidden p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900"
+          aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer Navigation */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white/98 border-b border-slate-200/90 backdrop-blur-xl overflow-hidden px-4 pt-3 pb-6 shadow-xl"
+            className="lg:hidden bg-white border-b border-slate-200 overflow-hidden shadow-xl"
           >
-            <div className="flex flex-col gap-2 mt-2">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-3 rounded-xl text-base font-semibold transition-colors ${
-                      isActive
-                        ? "bg-amber-600 text-white font-bold"
-                        : "text-slate-800 hover:bg-slate-100"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                );
-              })}
-              <div className="pt-4 border-t border-slate-200 flex flex-col gap-2">
+            <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-amber-50 hover:text-amber-600 transition flex items-center justify-between"
+                >
+                  <span>{link.name}</span>
+                  <ArrowRight className="w-4 h-4 text-slate-400" />
+                </Link>
+              ))}
+
+              <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
                 <a
                   href="tel:+918123758878"
-                  className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 text-slate-900 font-bold text-sm border border-slate-200"
+                  className="w-full py-3 rounded-xl bg-stone-100 border border-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2"
                 >
                   <Phone className="w-4 h-4 text-amber-600" />
-                  +91 8123758878
+                  <span>Call +91 8123758878</span>
+                </a>
+                <a
+                  href="https://wa.me/918123758878"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md"
+                >
+                  <MessageSquare className="w-4 h-4 fill-white/20" />
+                  <span>WhatsApp Us</span>
                 </a>
                 <Link
-                  href="/contact"
+                  href="/admin/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-600 text-white font-bold text-sm shadow-md"
+                  className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md"
                 >
-                  Enquire Now
-                  <ArrowRight className="w-4 h-4" />
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <span>Admin Login Portal</span>
                 </Link>
               </div>
             </div>

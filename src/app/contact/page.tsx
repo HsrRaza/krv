@@ -108,10 +108,21 @@ function ContactFormContent() {
           <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
             <MapPin className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="text-base font-bold text-slate-900">Head Office</h3>
-            <p className="text-sm text-slate-600 leading-relaxed mt-1">
-              #1/4, 1st Floor, Above Canara Bank ATM, Extension Mohalla, Ramanagara - 562159, Karnataka.
+          <div className="flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-base font-bold text-slate-900">Head Office</h3>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=1st+Floor,+Above+Canara+Bank+ATM,+Moti+Nagar+Extension,+Ramanagara,+Karnataka+562159"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-200 transition flex items-center gap-1 shrink-0"
+              >
+                <span>Open Maps</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed mt-1 font-medium">
+              1st Floor, Above Canara Bank ATM, Moti Nagar Extension, Ramanagara, Karnataka 562159
             </p>
           </div>
         </div>

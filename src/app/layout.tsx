@@ -3,6 +3,8 @@ import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MainContentWrapper from "@/components/MainContentWrapper";
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,6 +29,11 @@ export const metadata: Metadata = {
     "Turnkey Residential Construction",
     "3D Elevation Design",
   ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -35,11 +42,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${montserrat.variable} scroll-smooth light`}>
+    <html lang="en" className={`${inter.variable} ${montserrat.variable} light`}>
       <body className="min-h-screen bg-stone-50 text-slate-900 font-sans flex flex-col selection:bg-amber-500 selection:text-white">
-        <Navbar />
-        <main className="flex-grow pt-20">{children}</main>
-        <Footer />
+        <SmoothScrollProvider>
+          <Navbar />
+          <MainContentWrapper>{children}</MainContentWrapper>
+          <Footer />
+        </SmoothScrollProvider>
       </body>
     </html>
   );
