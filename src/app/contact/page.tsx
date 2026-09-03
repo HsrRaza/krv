@@ -252,15 +252,15 @@ function ContactFormContent() {
               </button>
             </motion.div>
           ) : (
-            <form onSubmit={(e) => handleSend("whatsapp", e)} className="flex flex-col gap-6">
+            <form onSubmit={(e) => handleSend("whatsapp", e)} className="flex flex-col gap-6 font-sans">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900">Send an Enquiry</h2>
-                <p className="text-xs text-slate-500 mt-1">Fill in your requirements below and choose to send via WhatsApp or Gmail.</p>
+                <h2 className="font-display font-bold text-2xl tracking-tight text-slate-900">Send an Enquiry</h2>
+                <p className="font-sans text-xs text-slate-500 mt-1">Fill in your requirements below and choose to send via WhatsApp or Gmail.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-700 mb-2">
                     Full Name *
                   </label>
                   <input
@@ -269,12 +269,12 @@ function ContactFormContent() {
                     placeholder="Enter your name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-600 focus:bg-white transition"
+                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-amber-600 focus:bg-white transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-700 mb-2">
                     Phone / WhatsApp *
                   </label>
                   <input
@@ -283,14 +283,14 @@ function ContactFormContent() {
                     placeholder="+91 Phone number"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-600 focus:bg-white transition"
+                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-amber-600 focus:bg-white transition"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-700 mb-2">
                     Email Address
                   </label>
                   <input
@@ -298,18 +298,18 @@ function ContactFormContent() {
                     placeholder="yourname@gmail.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-600 focus:bg-white transition"
+                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-amber-600 focus:bg-white transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-700 mb-2">
                     Service Required *
                   </label>
                   <select
                     value={formData.service}
                     onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 focus:bg-white transition"
+                    className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-amber-600 focus:bg-white transition"
                   >
                     <option value="Architectural Planning">Architectural Planning with Vastu</option>
                     <option value="Building Construction">Turnkey Building Construction</option>
@@ -322,7 +322,7 @@ function ContactFormContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-700 mb-2">
                   Project Details / Plot Dimensions
                 </label>
                 <textarea
@@ -330,7 +330,7 @@ function ContactFormContent() {
                   placeholder="e.g. 30x40 site in Ramanagara, planning G+2 floors residential house..."
                   value={formData.details}
                   onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-600 focus:bg-white transition"
+                  className="w-full px-4 py-3.5 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-amber-600 focus:bg-white transition"
                 />
               </div>
 
@@ -340,7 +340,7 @@ function ContactFormContent() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={(e) => handleSend("whatsapp")}
-                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm tracking-wide shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <MessageSquare className="w-4 h-4 fill-white/20" />
                   <span>Send via WhatsApp</span>
@@ -350,7 +350,7 @@ function ContactFormContent() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={(e) => handleSend("email")}
-                  className="w-full py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm tracking-wide shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Mail className="w-4 h-4 text-amber-400" />
                   <span>Send via Gmail</span>
@@ -377,17 +377,17 @@ export default function ContactPage() {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center gap-4"
           >
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/20">
+            <div className="font-display font-bold text-xs uppercase tracking-architectural text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/20 inline-flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Connect With KRV Engineers</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.1] text-white">
               Let’s Discuss Your Next <br className="hidden sm:inline" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500">
                 Construction Project
               </span>
             </h1>
-            <p className="text-slate-300 text-sm sm:text-lg max-w-3xl font-normal mt-2 leading-relaxed">
+            <p className="font-sans font-normal text-base sm:text-lg text-slate-300 max-w-3xl mt-2 leading-relaxed">
               Have a site to develop, planning a new home, or need structural consultancy? Reach out to our team in Ramanagara.
             </p>
           </motion.div>
@@ -396,7 +396,7 @@ export default function ContactPage() {
 
       {/* FORM SECTION WITH SUSPENSE */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Suspense fallback={<div className="text-center text-slate-500 py-10">Loading contact form...</div>}>
+        <Suspense fallback={<div className="text-center text-slate-500 py-10 font-sans">Loading contact form...</div>}>
           <ContactFormContent />
         </Suspense>
       </section>
@@ -404,10 +404,10 @@ export default function ContactPage() {
       {/* FREQUENTLY ASKED QUESTIONS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs uppercase tracking-widest font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+          <span className="font-display font-bold text-xs uppercase tracking-architectural text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 inline-block">
             Got Questions?
           </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl tracking-tight text-slate-900 mt-3">
             Frequently Asked Questions
           </h2>
         </div>
@@ -435,11 +435,11 @@ export default function ContactPage() {
               key={faq.q}
               className="p-6 rounded-2xl bg-white border border-slate-200/60 shadow-sm flex flex-col gap-2"
             >
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="font-display font-bold text-lg sm:text-xl tracking-normal text-slate-900 flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-amber-600 shrink-0" />
                 <span>{faq.q}</span>
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pl-7">{faq.a}</p>
+              <p className="font-sans font-normal text-sm text-slate-600 leading-relaxed pl-7">{faq.a}</p>
             </div>
           ))}
         </div>

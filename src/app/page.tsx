@@ -214,17 +214,17 @@ export default function HomePage() {
           >
             {/* Experience & Trust Badges */}
             <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-600/30 text-amber-800 text-xs font-extrabold tracking-wide">
+              <div className="font-display font-bold text-xs uppercase tracking-architectural text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-1.5 rounded-full inline-flex items-center gap-2">
                 <HardHat className="w-4 h-4 text-amber-600" />
                 <span>14+ Years Architectural Experience</span>
               </div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/10 border border-slate-900/20 text-slate-800 text-xs font-bold">
+              <div className="font-display font-bold text-xs uppercase tracking-architectural text-slate-800 bg-slate-900/10 border border-slate-900/20 px-3.5 py-1.5 rounded-full inline-flex items-center gap-2">
                 📍 Ramanagara Regional Office
               </div>
             </div>
 
             {/* Core Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.1] text-slate-900">
               Building Dreams With <br className="hidden sm:inline" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800">
                 Precision, Strength, & Trust
@@ -232,15 +232,15 @@ export default function HomePage() {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-slate-700 text-base sm:text-lg max-w-2xl font-medium leading-relaxed">
+            <p className="font-sans font-normal text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
               KRV Builders & Developers is Ramanagara&apos;s premier civil construction firm. From Vastu-aligned blueprints and 3D elevations to turnkey RCC residential and commercial structures.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto pt-2 font-sans">
               <a
                 href="#contact"
-                className="px-8 py-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-xl shadow-amber-600/25 transition duration-300 flex items-center justify-center gap-2 group"
+                className="px-8 py-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm tracking-wide shadow-xl shadow-amber-600/25 transition duration-300 flex items-center justify-center gap-2 group"
               >
                 <span>Enquire Now</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition duration-300" />
@@ -250,7 +250,7 @@ export default function HomePage() {
                 href="https://wa.me/918123758878"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition duration-300 flex items-center justify-center gap-2"
+                className="px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm tracking-wide shadow-lg shadow-emerald-600/20 transition duration-300 flex items-center justify-center gap-2"
               >
                 <MessageSquare className="w-4 h-4 fill-white/20" />
                 <span>WhatsApp Us (+91 8123758878)</span>
@@ -260,21 +260,21 @@ export default function HomePage() {
             {/* Key Trust Stats */}
             <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200/80 w-full max-w-lg">
               <div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">150+</div>
-                <div className="text-xs text-slate-600 font-semibold mt-0.5">Projects Delivered</div>
+                <div className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-slate-900">150+</div>
+                <div className="font-sans text-xs text-slate-600 font-semibold mt-0.5">Projects Delivered</div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-amber-600">100%</div>
-                <div className="text-xs text-slate-600 font-semibold mt-0.5">Vastu Compliant</div>
+                <div className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-amber-600">100%</div>
+                <div className="font-sans text-xs text-slate-600 font-semibold mt-0.5">Vastu Compliant</div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">14+</div>
-                <div className="text-xs text-slate-600 font-semibold mt-0.5">Years Trust</div>
+                <div className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-slate-900">14+</div>
+                <div className="font-sans text-xs text-slate-600 font-semibold mt-0.5">Years Trust</div>
               </div>
             </div>
           </motion.div>
 
-          {/* Right Floating Highlight Card - Dynamic Recently Added Projects */}
+          {/* Right Floating Highlight Card - Dynamic Recently Added Work In Progress Project */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -282,30 +282,34 @@ export default function HomePage() {
             className="lg:col-span-5 hidden lg:block"
           >
             {(() => {
-              const activeProject = dbProjects[0] || DEMO_PROJECTS[0];
+              const activeProject =
+                inProgressProjects[0] ||
+                DEMO_PROJECTS.find((p) => p.status === "in_progress") ||
+                dbProjects[0] ||
+                DEMO_PROJECTS[0];
               const isInProgress = activeProject.status === "in_progress";
 
               return (
                 <div className="p-7 sm:p-8 rounded-3xl bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl space-y-5 text-slate-900 transition-all">
                   <div className="flex items-center justify-between">
-                    <span className={`text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full border ${
+                    <span className={`font-display font-bold text-xs uppercase tracking-architectural px-3 py-1 rounded-full border ${
                       isInProgress
                         ? "text-amber-800 bg-amber-50 border-amber-200"
                         : "text-slate-800 bg-stone-100 border-slate-200"
                     }`}>
                       {isInProgress ? "Featured Live Site" : "Recently Added Project"}
                     </span>
-                    <span className="flex items-center gap-1.5 text-xs text-emerald-700 font-bold">
+                    <span className="font-sans flex items-center gap-1.5 text-xs text-emerald-700 font-semibold">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                       {isInProgress ? "Live Construction" : "Completed Build"}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900 leading-snug line-clamp-1">
+                    <h3 className="font-display font-bold text-lg sm:text-xl tracking-normal text-slate-900 leading-snug line-clamp-1">
                       {activeProject.title}
                     </h3>
-                    <p className="text-xs text-slate-600 mt-1 font-medium truncate">
+                    <p className="font-sans text-xs text-slate-600 mt-1 font-normal truncate">
                       {isInProgress
                         ? `Phase: ${activeProject.current_phase || "Structural Engineering"}`
                         : `Category: ${activeProject.category} • 📍 ${activeProject.location}`}
@@ -319,7 +323,7 @@ export default function HomePage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
-                    <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-xl border border-slate-800 text-[11px] font-bold text-white flex items-center gap-1.5">
+                    <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-xl border border-slate-800 font-sans text-[11px] font-semibold text-white flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-amber-400" />
                       <span>{activeProject.location}</span>
                     </div>
@@ -327,7 +331,7 @@ export default function HomePage() {
 
                   <Link
                     href={isInProgress ? "/work-in-progress" : "/gallery"}
-                    className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-md group"
+                    className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-sans font-semibold text-xs tracking-wide flex items-center justify-center gap-2 transition shadow-md group"
                   >
                     <span>{isInProgress ? "View All Work In Progress Sites" : "View Full Project Portfolio"}</span>
                     <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition" />
@@ -342,13 +346,13 @@ export default function HomePage() {
       {/* 2. SERVICES SECTION (8 CARDS) */}
       <section id="services" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <span className="text-xs uppercase tracking-widest font-extrabold text-amber-700 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200">
+          <span className="font-display font-bold text-xs uppercase tracking-architectural text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full inline-block">
             Our Architectural & Engineering Solutions
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl tracking-tight text-slate-900">
             Comprehensive Construction Services
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base font-normal">
+          <p className="font-sans font-normal text-sm sm:text-base text-slate-600 leading-relaxed">
             From initial site measurement to final keys handover, we manage every phase with engineering precision.
           </p>
         </div>

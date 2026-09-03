@@ -51,26 +51,26 @@ export default function Navbar() {
             <img src="/logo.png" alt="KRV Builders Logo" className="h-full w-auto object-contain max-h-10" />
           </div>
           <div className="flex flex-col">
-            <span className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-tight">
+            <span className="font-display font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">
               KRV BUILDERS
             </span>
-            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">
+            <span className="font-display font-bold text-[10px] text-amber-600 uppercase tracking-architectural">
               & Developers • Ramanagara
             </span>
           </div>
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center gap-1 bg-stone-100/70 p-1.5 rounded-full border border-slate-200/80">
+        <nav className="hidden lg:flex items-center gap-1 bg-stone-100/70 p-1.5 rounded-full border border-slate-200/80 font-sans">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition duration-200 ${
+                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition duration-200 ${
                   isActive
-                    ? "bg-amber-600 text-white shadow-sm"
+                    ? "bg-amber-600 text-white shadow-sm font-bold"
                     : "text-slate-700 hover:text-amber-600 hover:bg-white"
                 }`}
               >
@@ -81,10 +81,10 @@ export default function Navbar() {
         </nav>
 
         {/* Action Buttons */}
-        <div className="hidden sm:flex items-center gap-2.5">
+        <div className="hidden sm:flex items-center gap-2.5 font-sans">
           <a
             href="tel:+918123758878"
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-stone-100 hover:bg-stone-200 border border-slate-200 transition"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide text-slate-700 hover:text-slate-900 bg-stone-100 hover:bg-stone-200 border border-slate-200 transition"
           >
             <Phone className="w-3.5 h-3.5 text-amber-600" />
             <span>+91 8123758878</span>
@@ -92,7 +92,7 @@ export default function Navbar() {
 
           <Link
             href="/contact"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-md shadow-amber-600/20 transition"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold tracking-wide text-white bg-amber-600 hover:bg-amber-700 shadow-md shadow-amber-600/20 transition"
           >
             <span>Enquire</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -101,7 +101,7 @@ export default function Navbar() {
           {/* Admin Login Button */}
           <Link
             href="/admin/login"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide text-slate-700 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition shadow-sm"
             title="Admin Login Portal"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
