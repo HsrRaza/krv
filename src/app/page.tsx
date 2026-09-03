@@ -192,7 +192,7 @@ export default function HomePage() {
   return (
     <div className="space-y-24 pb-20 overflow-hidden bg-stone-50 text-slate-900">
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative min-h-[75vh] sm:min-h-[85vh] flex items-center justify-center pt-4 sm:pt-8 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Full Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center z-0 transform scale-105 transition duration-1000"
@@ -205,7 +205,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-stone-50/95 via-stone-50/85 to-stone-50/40 z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-50 via-transparent to-stone-50/30 z-10" />
 
-        <div className="max-w-7xl mx-auto w-full relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8">
+        <div className="max-w-7xl mx-auto w-full relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pt-2 sm:pt-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

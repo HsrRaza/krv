@@ -11,6 +11,7 @@ export default function MainContentWrapper({
   const isAdmin = pathname?.startsWith("/admin");
 
   return (
-    <main className={`flex-grow ${isAdmin ? "" : "pt-20"}`}>{children}</main>
+    <main className="flex-grow">{children}</main>
   );
+
 }
