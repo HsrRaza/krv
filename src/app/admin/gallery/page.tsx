@@ -116,20 +116,31 @@ export default function AdminGalleryPage() {
     setDeletingUrl(targetUrl);
 
     try {
-      // 1. Purge from Cloudinary via API
-      await fetch("/api/admin/cloudinary-delete", {
+      const urlsToDelete = isCover
+        ? [project.cover_image, ...(project.gallery_images || [])].filter(Boolean)
+        : [targetUrl];
+      const purgeResponse = await fetch("/api/admin/cloudinary-delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: targetUrl }),
+        body: JSON.stringify({ urls: urlsToDelete }),
       });
+
+      if (!purgeResponse.ok) {
+        const errorJson = await purgeResponse.json().catch(() => ({}));
+        throw new Error(errorJson.error || "Failed to delete the image from Cloudinary.");
+      }
 
       if (isCover) {
         // Delete full project if cover is removed
-        await fetch("/api/admin/projects", {
+        const deleteResponse = await fetch(`/api/admin/projects?id=${project.id}`, {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: project.id }),
         });
+
+        if (!deleteResponse.ok) {
+          const errorJson = await deleteResponse.json().catch(() => ({}));
+          throw new Error(errorJson.error || "Failed to delete the project record.");
+        }
+
         fetchProjects();
       } else {
         // 2. Remove URL from project.gallery_images via API
@@ -157,23 +168,24 @@ export default function AdminGalleryPage() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">
+      <div className="relative overflow-hidden flex flex-col sm:flex-row sm:items-end justify-between gap-6 bg-[#18211f] text-white p-6 sm:p-8 rounded-2xl border border-[#34413c] shadow-lg">
+        <div className="absolute inset-0 opacity-[0.1] bg-[linear-gradient(#d9b56d_1px,transparent_1px),linear-gradient(90deg,#d9b56d_1px,transparent_1px)] bg-size-[48px_48px]" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 text-[11px] font-bold text-amber-300 uppercase tracking-architectural mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Admin Media Hub</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Gallery & Media Manager
           </h1>
-          <p className="text-xs text-slate-600 mt-1">
+          <p className="text-sm text-[#c5cfca] mt-2 max-w-2xl">
             Upload showcase designs categorized under 3D Elevation, Architectural Plan, or Interior Design.
           </p>
         </div>
 
         <button
           onClick={() => setShowUploadForm(!showUploadForm)}
-          className="px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition shrink-0"
+          className="relative z-10 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 transition shrink-0"
         >
           {showUploadForm ? <X className="w-4 h-4" /> : <PlusCircle className="w-4 h-4" />}
           <span>{showUploadForm ? "Close Form" : "Upload Gallery Item"}</span>
@@ -184,7 +196,7 @@ export default function AdminGalleryPage() {
       {showUploadForm && (
         <form
           onSubmit={handleCreateGalleryItem}
-          className="bg-white p-6 sm:p-8 rounded-3xl border border-amber-200 shadow-md space-y-6 animate-in fade-in slide-in-from-top-4"
+          className="bg-white p-6 sm:p-8 rounded-2xl border border-amber-200 shadow-md space-y-6 animate-in fade-in slide-in-from-top-4"
         >
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -319,7 +331,7 @@ export default function AdminGalleryPage() {
             return (
               <div
                 key={project.id}
-                className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4"
+                className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"
               >
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-3">
@@ -344,7 +356,7 @@ export default function AdminGalleryPage() {
                       </div>
                     </div>
                   </div>
-                  <span className="text-xs font-bold text-slate-600 bg-stone-100 px-3 py-1 rounded-full border border-slate-200">
+                  <span className="text-[11px] font-bold text-slate-600 bg-[#f4f1eb] px-3 py-1.5 rounded-lg border border-slate-200">
                     {allImages.length} Image(s)
                   </span>
                 </div>
@@ -353,7 +365,7 @@ export default function AdminGalleryPage() {
                   {allImages.map((imgItem, idx) => (
                     <div
                       key={idx}
-                      className="relative h-32 rounded-2xl overflow-hidden border border-slate-200 shadow-sm group bg-slate-900"
+                      className="relative h-36 rounded-xl overflow-hidden border border-slate-200 shadow-sm group bg-slate-900"
                     >
                       <img
                         src={getOptimizedImageUrl(imgItem.url, 400)}

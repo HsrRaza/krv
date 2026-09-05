@@ -17,8 +17,9 @@ export default function Footer() {
           {/* Brand & Overview */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-auto flex items-center justify-center overflow-hidden rounded-xl bg-white p-1 border border-slate-700 shadow-md">
-                <img src="/logo.png" alt="KRV Builders Logo" className="h-full w-auto object-contain max-h-10" />
+              <div className="relative h-12 w-16 flex items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 border border-slate-600 shadow-md ring-4 ring-white/5">
+                <div className="absolute inset-1 rounded-lg border border-amber-100/80 pointer-events-none" />
+                <img src="/logo.png" alt="KRV Builders Logo" className="relative h-full w-full object-contain max-h-10" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-extrabold text-white tracking-tight leading-tight">

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     console.log(`Timestamp:   ${leadData.timestamp}`);
     console.log("==========================================");
 
-    // Format pre-filled WhatsApp message URL for direct messaging to target number +91 8217045680
+    // Format pre-filled WhatsApp message URL for direct messaging to target number +91 8123758878
     const formattedWhatsAppMessage = encodeURIComponent(
       `*New Construction Enquiry - KRV Builders*\n\n` +
         `👤 *Name:* ${name}\n` +
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         `📝 *Details:* ${details || "No additional details"}`
     );
 
-    const whatsappUrl = `https://wa.me/918217045680?text=${formattedWhatsAppMessage}`;
+    const whatsappUrl = `https://wa.me/918123758878?text=${formattedWhatsAppMessage}`;
 
     return NextResponse.json({
       success: true,

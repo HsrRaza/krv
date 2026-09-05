@@ -58,8 +58,9 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md relative z-10 space-y-6">
         {/* Brand Logo Header */}
         <div className="text-center space-y-3 font-sans">
-          <div className="h-16 w-auto inline-flex items-center justify-center overflow-hidden rounded-2xl bg-white p-2 border border-slate-200 shadow-xl shadow-slate-200/50 mx-auto">
-            <img src="/logo.png" alt="KRV Builders Logo" className="h-full w-auto object-contain max-h-12" />
+          <div className="relative h-20 w-24 inline-flex items-center justify-center overflow-hidden rounded-2xl bg-white p-2.5 border border-slate-200 shadow-xl shadow-slate-200/50 ring-8 ring-white/70 mx-auto">
+            <div className="absolute inset-2 rounded-xl border border-amber-100 pointer-events-none" />
+            <img src="/logo.png" alt="KRV Builders Logo" className="relative h-full w-full object-contain max-h-14" />
           </div>
           <h1 className="font-display font-extrabold text-2xl text-slate-900 tracking-tight">
             KRV Builders & Developers — Admin Portal

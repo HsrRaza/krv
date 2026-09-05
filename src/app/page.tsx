@@ -33,90 +33,6 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-// Fallback initial projects if database is fresh
-const DEMO_PROJECTS: Project[] = [
-  {
-    id: "demo-1",
-    title: "Vastu Compliant G+2 Luxury Residence",
-    status: "in_progress",
-    category: "Construction",
-    location: "Ramanagara Extension",
-    current_phase: "Plastering & Electrical Concealing",
-    cover_image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    gallery_images: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    ],
-    description: "Premium 4BHK residence designed with 100% Vastu compliance and custom RCC framework.",
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-2",
-    title: "Commercial Retail & Office Complex",
-    status: "in_progress",
-    category: "Construction",
-    location: "BM Road, Ramanagara",
-    current_phase: "Brickwork, Lintels & Slab Casting",
-    cover_image:
-      "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1200&q=80",
-    gallery_images: [
-      "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
-    ],
-    description: "Modern commercial multi-story complex featuring glass facade and underground parking.",
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-3",
-    title: "Modern Duplex Villa 3D Elevation",
-    status: "completed",
-    category: "3D Elevations",
-    location: "Channapatna Road",
-    current_phase: null,
-    cover_image:
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    gallery_images: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
-    ],
-    description: "Contemporary 3D elevation rendering with wooden louvers and exterior LED highlights.",
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-4",
-    title: "Teakwood & Marble Living Interior",
-    status: "completed",
-    category: "Interiors",
-    location: "Ramanagara Town",
-    current_phase: null,
-    cover_image:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
-    gallery_images: [
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
-    ],
-    description: "Bespoke interior design with custom teakwood paneling and imported Italian marble flooring.",
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-5",
-    title: "Architectural Blueprint & Vastu Plan",
-    status: "completed",
-    category: "Vastu Plans",
-    location: "Ramanagara District",
-    current_phase: null,
-    cover_image:
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-    gallery_images: [
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-    ],
-    description: "Detailed municipal layout drawing engineered according to traditional Indian Vastu Shastra.",
-    created_at: new Date().toISOString(),
-  },
-];
-
 export default function HomePage() {
   const [dbProjects, setDbProjects] = useState<Project[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -143,7 +59,7 @@ export default function HomePage() {
       if (!error && data && data.length > 0) {
         setDbProjects(data as Project[]);
       } else {
-        setDbProjects(DEMO_PROJECTS);
+        setDbProjects([]);
       }
     }
     loadProjects();
@@ -190,9 +106,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-24 pb-20 overflow-hidden bg-stone-50 text-slate-900">
+    <div className="space-y-24 pb-20 overflow-hidden bg-[#f4f1eb] text-slate-900">
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[75vh] sm:min-h-[85vh] flex items-center justify-center pt-4 sm:pt-8 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative min-h-[75vh] sm:min-h-[85vh] flex items-center justify-center pt-8 sm:pt-12 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Full Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center z-0 transform scale-105 transition duration-1000"
@@ -202,8 +118,8 @@ export default function HomePage() {
         />
 
         {/* Soft Architectural Light Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-stone-50/95 via-stone-50/85 to-stone-50/40 z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-50 via-transparent to-stone-50/30 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#f4f1eb]/95 via-[#f4f1eb]/82 to-[#f4f1eb]/25 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#f4f1eb] via-transparent to-[#f4f1eb]/20 z-10" />
 
         <div className="max-w-7xl mx-auto w-full relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pt-2 sm:pt-4">
           <motion.div
@@ -214,17 +130,17 @@ export default function HomePage() {
           >
             {/* Experience & Trust Badges */}
             <div className="flex flex-wrap items-center gap-3">
-              <div className="font-display font-bold text-xs uppercase tracking-architectural text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-1.5 rounded-full inline-flex items-center gap-2">
+              <div className="font-display font-bold text-[11px] uppercase tracking-architectural text-amber-800 bg-amber-50/90 border border-amber-200 px-3.5 py-1.5 rounded-lg inline-flex items-center gap-2">
                 <HardHat className="w-4 h-4 text-amber-600" />
                 <span>14+ Years Architectural Experience</span>
               </div>
-              <div className="font-display font-bold text-xs uppercase tracking-architectural text-slate-800 bg-slate-900/10 border border-slate-900/20 px-3.5 py-1.5 rounded-full inline-flex items-center gap-2">
+              <div className="font-display font-bold text-[11px] uppercase tracking-architectural text-slate-800 bg-white/50 border border-slate-900/15 px-3.5 py-1.5 rounded-lg inline-flex items-center gap-2">
                 📍 Ramanagara Regional Office
               </div>
             </div>
 
             {/* Core Headline */}
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.1] text-slate-900">
+            <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl tracking-tight leading-[1.02] text-slate-900 max-w-4xl">
               Building Dreams With <br className="hidden sm:inline" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800">
                 Precision, Strength, & Trust
@@ -281,12 +197,8 @@ export default function HomePage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="lg:col-span-5 hidden lg:block"
           >
-            {(() => {
-              const activeProject =
-                inProgressProjects[0] ||
-                DEMO_PROJECTS.find((p) => p.status === "in_progress") ||
-                dbProjects[0] ||
-                DEMO_PROJECTS[0];
+            {inProgressProjects.length > 0 || dbProjects.length > 0 ? (() => {
+              const activeProject = inProgressProjects[0] || dbProjects[0];
               const isInProgress = activeProject.status === "in_progress";
 
               return (
@@ -338,7 +250,7 @@ export default function HomePage() {
                   </Link>
                 </div>
               );
-            })()}
+            })() : null}
           </motion.div>
         </div>
       </section>

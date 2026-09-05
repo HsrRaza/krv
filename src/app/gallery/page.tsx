@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { Project } from "@/types/database";
@@ -15,7 +14,6 @@ import {
   MessageSquare,
   Loader2,
   MapPin,
-  Tag,
   Compass,
 } from "lucide-react";
 
@@ -34,71 +32,6 @@ interface DisplayProject {
   status: "in_progress" | "completed";
 }
 
-const fallbackProjects: DisplayProject[] = [
-  {
-    id: "fallback-1",
-    title: "Modern Dual-Facade Villa",
-    category: "3D Elevation",
-    categoryName: "3D Elevation",
-    location: "Ramanagara Extension",
-    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    ],
-    desc: "Contemporary duplex residential facade featuring composite wood paneling, warm exterior LED strip accents, and large window frames.",
-    details: ["Plot Size: 40x60 ft", "Type: 3D Elevation Design", "Year: 2024"],
-    status: "completed",
-  },
-  {
-    id: "fallback-2",
-    title: "Vastu 2D & 3D Architectural Blueprint",
-    category: "Plan",
-    categoryName: "Plan",
-    location: "Ramanagara City",
-    img: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [],
-    desc: "Vastu-optimized layout plan for a 30x40 site maximizing natural light, East-facing main entry, and optimal structural geometry.",
-    details: ["Plot Size: 30x40 ft", "Orientation: East Facing", "Scope: Vastu Plan & Sanction"],
-    status: "completed",
-  },
-  {
-    id: "fallback-3",
-    title: "Open-Concept Modular Kitchen",
-    category: "Interior Design",
-    categoryName: "Interior Design",
-    location: "Indiranagar Villa",
-    img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [],
-    desc: "Custom acrylic modular kitchen design with seamless soft-close drawers, island breakfast counter, and integrated quartz countertop.",
-    details: ["Type: Modular Kitchen", "Materials: Acrylic & Quartz", "Year: 2024"],
-    status: "completed",
-  },
-  {
-    id: "fallback-4",
-    title: "Luxury Contemporary Residence Exterior",
-    category: "3D Elevation",
-    categoryName: "3D Elevation",
-    location: "Kengeri Satellite Town",
-    img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [],
-    desc: "Turnkey luxury independent home exterior featuring natural stone cladding and modern glass balcony railings.",
-    details: ["Plot Size: 50x80 ft", "Scope: 3D Render & Execution", "Year: 2024"],
-    status: "completed",
-  },
-  {
-    id: "fallback-5",
-    title: "Minimalist Master Suite Interior",
-    category: "Interior Design",
-    categoryName: "Interior Design",
-    location: "Vijayanagar Residence",
-    img: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [],
-    desc: "Ergonomic master suite interior with ambient concealed backlighting, floor-to-ceiling veneer wardrobe, and acoustic wooden paneling.",
-    details: ["Type: Master Suite", "Scope: Woodwork & Lighting", "Year: 2024"],
-    status: "completed",
-  },
-];
-
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>("all");
   const [projectsList, setProjectsList] = useState<DisplayProject[]>([]);
@@ -114,10 +47,9 @@ export default function GalleryPage() {
   const fetchLiveGalleryProjects = async () => {
     setLoading(true);
     try {
-      // Exclude work in progress items (status === 'in_progress') so WIP data stays ONLY in /work-in-progress!
       const { data, error } = await (supabase.from("projects") as any)
         .select("*")
-        .neq("status", "in_progress")
+        .eq("status", "completed")
         .order("created_at", { ascending: false });
 
       if (!error && data && data.length > 0) {
@@ -152,17 +84,16 @@ export default function GalleryPage() {
         });
         setProjectsList(mapped);
       } else {
-        setProjectsList(fallbackProjects);
+        setProjectsList([]);
       }
     } catch (err) {
       console.error("Error fetching gallery items:", err);
-      setProjectsList(fallbackProjects);
+      setProjectsList([]);
     }
     setLoading(false);
   };
 
   const filteredProjects = projectsList
-    .filter((p) => p.status !== "in_progress")
     .filter((p) => {
       if (selectedCategory === "all") return true;
       const catLower = (p.category || "").toLowerCase();
@@ -181,37 +112,50 @@ export default function GalleryPage() {
     });
 
   return (
-    <div className="space-y-16 sm:space-y-20 pb-20 overflow-hidden bg-slate-50 text-slate-900">
+    <div className="min-h-screen overflow-hidden bg-[#f4f1eb] text-slate-900 pb-24">
       {/* HEADER HERO */}
-      <section className="relative pt-12 pb-16 bg-slate-900 text-white border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <section className="relative overflow-hidden bg-[#18211f] text-white border-b border-[#34413c]">
+        <div className="absolute inset-0 opacity-[0.12] bg-[linear-gradient(#d9b56d_1px,transparent_1px),linear-gradient(90deg,#d9b56d_1px,transparent_1px)] bg-size-[56px_56px]" />
+        <div className="absolute -right-24 -top-32 h-96 w-96 rounded-full border border-amber-200/20" />
+        <div className="absolute -right-10 -top-16 h-64 w-64 rounded-full border border-amber-200/15" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 grid lg:grid-cols-[1fr_280px] gap-12 items-end">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center gap-4"
+            className="flex flex-col items-start gap-5 max-w-4xl"
           >
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/20">
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-300">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Admin Managed Showcase</span>
+              <span>Selected works / KRV archive</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
-              3D Elevations, Plans & <br className="hidden sm:inline" />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500">
-                Interior Design Gallery
-              </span>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[0.98]">
+              Built to be <span className="text-amber-300">seen.</span>
             </h1>
-            <p className="text-slate-300 text-sm sm:text-lg max-w-3xl font-normal mt-2 leading-relaxed">
-              Explore our curated portfolio of photorealistic 3D elevations, Vastu architectural floor plans, and bespoke luxury interior designs.
+            <p className="text-[#c5cfca] text-sm sm:text-base max-w-2xl font-normal leading-relaxed">
+              A considered collection of elevations, plans, and interiors shaped by proportion, material, and the way people actually live.
             </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="border-l border-amber-200/25 pl-5 space-y-5"
+          >
+            <Compass className="w-7 h-7 text-amber-300" strokeWidth={1.5} />
+            <div>
+              <div className="text-3xl font-extrabold text-white">{projectsList.length.toString().padStart(2, "0")}</div>
+              <div className="text-[11px] uppercase tracking-[0.18em] text-[#aab7b0] mt-1">Published projects</div>
+            </div>
+            <div className="text-xs leading-relaxed text-[#aab7b0]">Updated by the KRV design team as new work is completed.</div>
           </motion.div>
         </div>
       </section>
 
       {/* CATEGORY FILTER TABS & SHOWCASE GRID */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-7 relative z-20">
         {/* Category Tabs: 3D Elevation, Plan, Interior Design */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12">
+        <div className="flex flex-wrap items-center gap-1.5 p-2 bg-white/90 backdrop-blur border border-slate-200 rounded-2xl shadow-lg shadow-slate-900/5 mb-12 w-fit max-w-full">
           {[
             { key: "all", label: "All Designs" },
             { key: "3D Elevation", label: "3D Elevation" },
@@ -223,10 +167,10 @@ export default function GalleryPage() {
               <button
                 key={tab.key}
                 onClick={() => setSelectedCategory(tab.key as GalleryCategory)}
-                className={`px-5 sm:px-7 py-3 rounded-full text-xs sm:text-sm font-bold transition-all ${
+                className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                   isActive
-                    ? "bg-slate-900 text-white shadow-lg scale-105"
-                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+                    ? "bg-[#18211f] text-white shadow-md"
+                    : "text-slate-600 hover:bg-[#f4f1eb] hover:text-slate-900"
                 }`}
               >
                 {tab.label}
@@ -247,9 +191,9 @@ export default function GalleryPage() {
             <p className="text-xs text-slate-500 mt-1">Select another category or upload photos in the admin panel.</p>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <motion.div layout className="columns-1 md:columns-2 xl:columns-3 gap-6">
             <AnimatePresence>
-              {filteredProjects.map((project) => (
+              {filteredProjects.map((project, idx) => (
                 <motion.div
                   key={project.id}
                   layout
@@ -257,10 +201,10 @@ export default function GalleryPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.4 }}
-                  className="rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-md hover:shadow-xl group flex flex-col justify-between"
+                  className="mb-6 break-inside-avoid rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 group flex flex-col justify-between transition-all duration-500"
                 >
                   <div>
-                    <div className="relative h-64 sm:h-72 overflow-hidden bg-slate-900">
+                    <div className={`relative ${idx % 3 === 1 ? "h-80" : idx % 3 === 2 ? "h-60" : "h-72"} overflow-hidden bg-slate-900`}>
                       <img
                         src={getOptimizedImageUrl(project.img, 800)}
                         alt={project.title}
@@ -269,7 +213,7 @@ export default function GalleryPage() {
                       <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/40 transition-colors" />
 
                       <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                        <span className="px-3.5 py-1 bg-amber-500 text-slate-950 text-xs font-extrabold rounded-full shadow-sm uppercase tracking-wider">
+                        <span className="px-3 py-1.5 bg-white/95 text-slate-900 text-[10px] font-extrabold rounded-lg shadow-sm uppercase tracking-architectural">
                           {project.categoryName}
                         </span>
                       </div>
@@ -283,8 +227,8 @@ export default function GalleryPage() {
                       </button>
                     </div>
 
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                    <div className="p-5 sm:p-6">
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-700 transition-colors leading-snug">
                         {project.title}
                       </h3>
                       <p className="text-xs text-slate-500 mt-1 font-medium flex items-center gap-1">
@@ -297,10 +241,10 @@ export default function GalleryPage() {
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 border-t border-slate-100 flex items-center justify-between mt-4">
+                  <div className="p-5 sm:p-6 pt-0 border-t border-slate-100 flex items-center justify-between mt-4">
                     <button
                       onClick={() => setActiveModalItem(project)}
-                      className="text-xs font-bold text-amber-600 hover:underline flex items-center gap-1"
+                      className="text-xs font-bold text-slate-700 hover:text-amber-700 transition-colors flex items-center gap-1"
                     >
                       View High-Res Photo ({1 + (project.galleryImages?.length || 0)})
                     </button>

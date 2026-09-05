@@ -57,7 +57,7 @@ function ContactFormContent() {
     const formattedMessage = encodeURIComponent(messageText);
 
     // WhatsApp URL
-    const targetWhatsappUrl = `https://wa.me/918217045680?text=${formattedMessage}`;
+    const targetWhatsappUrl = `https://wa.me/918123758878?text=${formattedMessage}`;
 
     // Gmail Web Composer URL + mailto fallback
     const subject = encodeURIComponent(`New Construction Enquiry from ${formData.name}`);
@@ -168,14 +168,14 @@ function ContactFormContent() {
         {/* Quick Actions */}
         <div className="flex flex-col gap-3">
           <a
-            href="https://wa.me/918217045680"
+            href="https://wa.me/918123758878"
             target="_blank"
             rel="noopener noreferrer"
             className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
           >
             <div className="flex items-center gap-3">
               <MessageSquare className="w-5 h-5 fill-emerald-600/20 text-emerald-600" />
-              <div className="text-sm font-bold text-slate-900">WhatsApp (+91 8217045680)</div>
+              <div className="text-sm font-bold text-slate-900">WhatsApp (+91 8123758878)</div>
             </div>
             <ArrowRight className="w-4 h-4 text-emerald-700" />
           </a>
@@ -195,7 +195,7 @@ function ContactFormContent() {
 
       {/* Inquiry Form */}
       <div className="lg:col-span-7">
-        <div className="p-6 sm:p-10 rounded-3xl bg-white border border-slate-200/90 shadow-md relative overflow-hidden">
+        <div className="p-6 sm:p-10 rounded-2xl bg-white border border-slate-200/90 shadow-lg shadow-slate-900/5 relative overflow-hidden">
           {submitted ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -215,7 +215,7 @@ function ContactFormContent() {
               </div>
 
               {/* Manual Re-open buttons if pop-up blocker engaged */}
-              <div className="w-full max-w-md p-5 rounded-2xl bg-stone-50 border border-slate-200 text-left flex flex-col gap-3 mt-2">
+              <div className="w-full max-w-md p-5 rounded-xl bg-[#f4f1eb] border border-slate-200 text-left flex flex-col gap-3 mt-2">
                 <div className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Re-open options:
                 </div>
@@ -227,7 +227,7 @@ function ContactFormContent() {
                     className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition shadow-md"
                   >
                     <MessageSquare className="w-4 h-4 fill-white/20" />
-                    <span>Open in WhatsApp (+91 8217045680)</span>
+                    <span>Open in WhatsApp (+91 8123758878)</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
 
@@ -367,30 +367,34 @@ function ContactFormContent() {
 
 export default function ContactPage() {
   return (
-    <div className="space-y-16 sm:space-y-20 pb-20 overflow-hidden bg-stone-50 text-slate-900">
+    <div className="min-h-screen space-y-16 sm:space-y-20 pb-24 overflow-hidden bg-[#f4f1eb] text-slate-900">
       {/* HEADER HERO */}
-      <section className="relative pt-12 pb-16 bg-slate-900 text-white border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <section className="relative overflow-hidden bg-[#18211f] text-white border-b border-[#34413c]">
+        <div className="absolute inset-0 opacity-[0.12] bg-[linear-gradient(#d9b56d_1px,transparent_1px),linear-gradient(90deg,#d9b56d_1px,transparent_1px)] bg-size-[56px_56px]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 grid lg:grid-cols-[1fr_260px] gap-10 items-end">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center gap-4"
+            className="flex flex-col items-start gap-5 max-w-4xl"
           >
-            <div className="font-display font-bold text-xs uppercase tracking-architectural text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/20 inline-flex items-center gap-2">
+            <div className="font-display font-bold text-[11px] uppercase tracking-[0.2em] text-amber-300 inline-flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Connect With KRV Engineers</span>
             </div>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.1] text-white">
-              Let’s Discuss Your Next <br className="hidden sm:inline" />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500">
-                Construction Project
-              </span>
+            <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl tracking-tight leading-[0.98] text-white">
+              Start with a<br />
+              <span className="text-amber-300">clear conversation.</span>
             </h1>
-            <p className="font-sans font-normal text-base sm:text-lg text-slate-300 max-w-3xl mt-2 leading-relaxed">
-              Have a site to develop, planning a new home, or need structural consultancy? Reach out to our team in Ramanagara.
+            <p className="font-sans font-normal text-sm sm:text-base text-[#c5cfca] max-w-2xl leading-relaxed">
+              Tell us what you are building, where you are building it, and what a successful result looks like. Our Ramanagara team will take it from there.
             </p>
           </motion.div>
+          <div className="border-l border-amber-200/25 pl-5 space-y-2">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-amber-300">Consultation desk</div>
+            <div className="text-2xl font-extrabold text-white">Mon–Fri · 9–8</div>
+            <div className="text-xs leading-relaxed text-[#aab7b0]">Site visits and weekend appointments by arrangement.</div>
+          </div>
         </div>
       </section>
 

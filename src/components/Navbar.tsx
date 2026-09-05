@@ -47,8 +47,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="h-12 w-auto flex items-center justify-center overflow-hidden rounded-xl bg-white p-1 border border-slate-200 shadow-sm group-hover:scale-105 transition duration-300">
-            <img src="/logo.png" alt="KRV Builders Logo" className="h-full w-auto object-contain max-h-10" />
+          <div className="relative h-12 w-16 flex items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 border border-slate-200 shadow-sm ring-4 ring-white/40 group-hover:-translate-y-0.5 group-hover:shadow-md transition duration-300">
+            <div className="absolute inset-1 rounded-lg border border-amber-100 pointer-events-none" />
+            <img src="/logo.png" alt="KRV Builders Logo" className="relative h-full w-full object-contain max-h-10" />
           </div>
           <div className="flex flex-col">
             <span className="font-display font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">

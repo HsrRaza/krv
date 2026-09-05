@@ -131,7 +131,8 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const body = await request.json().catch(() => ({}));
+    const id = searchParams.get("id") || body.id;
 
     if (!id) {
       return NextResponse.json({ error: "Project ID is required." }, { status: 400 });

@@ -5,7 +5,7 @@ const cspHeader = `
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com data:;
-    img-src 'self' data: blob: https://res.cloudinary.com https://*.supabase.co https://maps.gstatic.com https://*.googleapis.com;
+    img-src 'self' data: blob: https://res.cloudinary.com https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://maps.gstatic.com https://*.googleapis.com;
     connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://maps.googleapis.com;
     frame-src 'self' https://www.google.com https://maps.google.com;
     frame-ancestors 'none';

@@ -129,6 +129,20 @@ export async function POST(request: Request) {
       )
     );
 
+    const failedResults = results.filter((result) => "error" in result);
+    if (failedResults.length > 0) {
+      return NextResponse.json(
+        {
+          error: "One or more Cloudinary assets could not be deleted.",
+          deleted_ids: sanitizedIds.filter(
+            (id) => !failedResults.some((result) => result.public_id === id)
+          ),
+          results,
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       deleted_ids: sanitizedIds,
