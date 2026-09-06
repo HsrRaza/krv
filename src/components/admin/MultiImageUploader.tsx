@@ -1,19 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { uploadToCloudinary, getOptimizedImageUrl, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from "@/lib/cloudinary";
+import {
+  uploadToCloudinary,
+  getOptimizedImageUrl,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_MB,
+  MAX_PROJECT_IMAGES,
+} from "@/lib/cloudinary";
 import { Image as ImageIcon, X, Loader2, AlertCircle } from "lucide-react";
 
 interface MultiImageUploaderProps {
   values: string[];
   onChange: (urls: string[]) => void;
   label?: string;
+  coverImage?: string;
+  maxImages?: number;
 }
 
 export default function MultiImageUploader({
   values,
   onChange,
   label = "Gallery Photos (Site Progress Shots)",
+  coverImage = "",
+  maxImages = MAX_PROJECT_IMAGES,
 }: MultiImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -24,6 +34,16 @@ export default function MultiImageUploader({
 
     setErrorMessage(null);
     const fileList = Array.from(files);
+
+    const currentImageCount = (coverImage ? 1 : 0) + values.length;
+    const availableSlots = maxImages - currentImageCount;
+    if (fileList.length > availableSlots) {
+      setErrorMessage(
+        `You can add only ${Math.max(availableSlots, 0)} more image(s). Delete existing images before uploading more.`
+      );
+      e.target.value = "";
+      return;
+    }
 
     // Validate that no single file exceeds 5MB
     const oversized = fileList.filter((f) => f.size > MAX_FILE_SIZE_BYTES);

@@ -145,6 +145,12 @@ export default function AdminProjectsPage() {
     (acc, p) => acc + 1 + (p.gallery_images?.length || 0),
     0
   );
+  const inProgressImageCount = projects
+    .filter((p) => p.status === "in_progress")
+    .reduce((acc, p) => acc + 1 + (p.gallery_images?.length || 0), 0);
+  const completedImageCount = projects
+    .filter((p) => p.status === "completed")
+    .reduce((acc, p) => acc + 1 + (p.gallery_images?.length || 0), 0);
 
   // Filtered List
   const filteredProjects = projects.filter((p) => {
@@ -361,6 +367,8 @@ export default function AdminProjectsPage() {
         editingProject={editingProject}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveProject}
+        inProgressImageCount={inProgressImageCount}
+        completedImageCount={completedImageCount}
       />
 
       {/* Project Deletion Confirmation Dialog */}

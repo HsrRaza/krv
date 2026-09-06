@@ -5,6 +5,8 @@
 
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB limit
 export const MAX_FILE_SIZE_MB = 5;
+export const MAX_PROJECT_IMAGES = 20;
+export const MAX_SECTION_IMAGES = 20;
 
 export async function uploadToCloudinary(file: File): Promise<string> {
   // 1. Enforce 5MB File Cap before any network request

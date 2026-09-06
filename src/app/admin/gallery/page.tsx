@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { getOptimizedImageUrl } from "@/lib/cloudinary";
 import { Project } from "@/types/database";
 import ImageUploader from "@/components/admin/ImageUploader";
+import { MAX_SECTION_IMAGES } from "@/lib/cloudinary";
 import {
   Image as ImageIcon,
   Trash2,
@@ -102,6 +103,11 @@ export default function AdminGalleryPage() {
       setSubmitting(false);
     }
   };
+
+  const galleryImageCount = projects.reduce(
+    (total, project) => total + 1 + (project.gallery_images?.length || 0),
+    0
+  );
 
   // Delete an individual gallery photo directly
   const handleDeleteImage = async (project: Project, targetUrl: string, isCover: boolean) => {
@@ -271,6 +277,7 @@ export default function AdminGalleryPage() {
             <ImageUploader
               value={formData.cover_image}
               onChange={(url) => setFormData({ ...formData, cover_image: url })}
+              canUpload={galleryImageCount < MAX_SECTION_IMAGES}
               label="Select Image to Upload (Cloudinary Direct • Max 5MB)"
             />
           </div>

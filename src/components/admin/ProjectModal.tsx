@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Project, ProjectStatus, ConstructionPhase } from "@/types/database";
 import ImageUploader from "./ImageUploader";
 import MultiImageUploader from "./MultiImageUploader";
+import { MAX_PROJECT_IMAGES, MAX_SECTION_IMAGES } from "@/lib/cloudinary";
 import { Building2, X, Loader2, Layers } from "lucide-react";
 
 export const PHASE_OPTIONS: ConstructionPhase[] = [
@@ -29,6 +30,8 @@ interface ProjectModalProps {
   editingProject: Project | null;
   onClose: () => void;
   onSave: (payload: any, editingId?: string) => Promise<void>;
+  inProgressImageCount?: number;
+  completedImageCount?: number;
 }
 
 export default function ProjectModal({
@@ -36,6 +39,8 @@ export default function ProjectModal({
   editingProject,
   onClose,
   onSave,
+  inProgressImageCount = 0,
+  completedImageCount = 0,
 }: ProjectModalProps) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(CATEGORY_OPTIONS[0]);
@@ -73,6 +78,18 @@ export default function ProjectModal({
 
   if (!isOpen) return null;
 
+  const currentProjectImageCount = (coverImage ? 1 : 0) + galleryImages.length;
+  const totalForSelectedSection =
+    status === "in_progress" ? inProgressImageCount : completedImageCount;
+  const currentProjectSectionCount =
+    editingProject?.status === status ? currentProjectImageCount : 0;
+  const otherSectionImageCount = totalForSelectedSection - currentProjectSectionCount;
+  const sectionSlots = Math.max(MAX_SECTION_IMAGES - otherSectionImageCount, 0);
+  const maxImagesForThisProject = Math.min(
+    MAX_PROJECT_IMAGES,
+    currentProjectImageCount + sectionSlots
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
@@ -81,6 +98,12 @@ export default function ProjectModal({
     }
     if (!coverImage) {
       setErrorMessage("Please upload a cover image.");
+      return;
+    }
+    if (1 + galleryImages.length > MAX_PROJECT_IMAGES) {
+      setErrorMessage(
+        `A project can contain a maximum of ${MAX_PROJECT_IMAGES} images including the cover. Remove existing images before saving.`
+      );
       return;
     }
 
@@ -236,10 +259,19 @@ export default function ProjectModal({
           )}
 
           {/* Cover Image Component */}
-          <ImageUploader value={coverImage} onChange={setCoverImage} />
+          <ImageUploader
+            value={coverImage}
+            onChange={setCoverImage}
+            canUpload={Boolean(coverImage) || sectionSlots > 0}
+          />
 
           {/* Gallery Images Component */}
-          <MultiImageUploader values={galleryImages} onChange={setGalleryImages} />
+          <MultiImageUploader
+            values={galleryImages}
+            onChange={setGalleryImages}
+            coverImage={coverImage}
+            maxImages={maxImagesForThisProject}
+          />
 
           {/* Description */}
           <div>

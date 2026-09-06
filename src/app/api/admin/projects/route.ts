@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient as createSupabaseDirectClient } from "@supabase/supabase-js";
 import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
+import { MAX_PROJECT_IMAGES, MAX_SECTION_IMAGES } from "@/lib/cloudinary";
 
 async function getSupabaseClient() {
   if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -11,6 +12,23 @@ async function getSupabaseClient() {
     );
   }
   return await createSupabaseServerClient();
+}
+
+function getImageCount(coverImage: unknown, galleryImages: unknown) {
+  const coverCount = typeof coverImage === "string" && coverImage.trim() ? 1 : 0;
+  const galleryCount = Array.isArray(galleryImages)
+    ? galleryImages.filter((url) => typeof url === "string" && url.trim()).length
+    : 0;
+  return coverCount + galleryCount;
+}
+
+function getSectionImageCount(projects: any[], status: string, excludedId?: string) {
+  return projects
+    .filter((project) => project.status === status && project.id !== excludedId)
+    .reduce(
+      (total, project) => total + getImageCount(project.cover_image, project.gallery_images),
+      0
+    );
 }
 
 // GET all projects
@@ -41,7 +59,37 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { id, title, category, location, status, current_phase, description, cover_image, gallery_images } = body;
 
+    if (!Array.isArray(gallery_images)) {
+      return NextResponse.json({ error: "Gallery images must be an array." }, { status: 400 });
+    }
+    if (getImageCount(cover_image, gallery_images) > MAX_PROJECT_IMAGES) {
+      return NextResponse.json(
+        { error: `A project can contain a maximum of ${MAX_PROJECT_IMAGES} images including the cover.` },
+        { status: 400 }
+      );
+    }
+
     const supabase = (await getSupabaseClient()) as any;
+    const { data: existingProjects, error: existingProjectsError } = await supabase
+      .from("projects")
+      .select("id, status, cover_image, gallery_images");
+
+    if (existingProjectsError) {
+      return NextResponse.json({ error: existingProjectsError.message }, { status: 400 });
+    }
+
+    if (
+      getSectionImageCount(existingProjects || [], status, id) +
+        getImageCount(cover_image, gallery_images) >
+      MAX_SECTION_IMAGES
+    ) {
+      return NextResponse.json(
+        {
+          error: `The ${status === "completed" ? "gallery" : "work in progress"} section is limited to ${MAX_SECTION_IMAGES} images. Delete existing images before uploading more.`,
+        },
+        { status: 400 }
+      );
+    }
 
     if (id) {
       // Update existing project
@@ -107,7 +155,56 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Project ID is required." }, { status: 400 });
     }
 
+    if ("gallery_images" in updates) {
+      if (!Array.isArray(updates.gallery_images)) {
+        return NextResponse.json({ error: "Gallery images must be an array." }, { status: 400 });
+      }
+      if (updates.gallery_images.length > MAX_PROJECT_IMAGES - 1) {
+        return NextResponse.json(
+          { error: `A project can contain a maximum of ${MAX_PROJECT_IMAGES} images including the cover.` },
+          { status: 400 }
+        );
+      }
+    }
+
     const supabase = (await getSupabaseClient()) as any;
+    const { data: existingProject, error: existingProjectError } = await supabase
+      .from("projects")
+      .select("id, status, cover_image, gallery_images")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (existingProjectError || !existingProject) {
+      return NextResponse.json(
+        { error: existingProjectError?.message || "Project not found." },
+        { status: 404 }
+      );
+    }
+
+    const nextStatus = typeof updates.status === "string" ? updates.status : existingProject.status;
+    const nextCoverImage = "cover_image" in updates ? updates.cover_image : existingProject.cover_image;
+    const nextGalleryImages = "gallery_images" in updates ? updates.gallery_images : existingProject.gallery_images;
+    const { data: allProjects, error: allProjectsError } = await supabase
+      .from("projects")
+      .select("id, status, cover_image, gallery_images");
+
+    if (allProjectsError) {
+      return NextResponse.json({ error: allProjectsError.message }, { status: 400 });
+    }
+
+    if (
+      getSectionImageCount(allProjects || [], nextStatus, id) +
+        getImageCount(nextCoverImage, nextGalleryImages) >
+      MAX_SECTION_IMAGES
+    ) {
+      return NextResponse.json(
+        {
+          error: `The ${nextStatus === "completed" ? "gallery" : "work in progress"} section is limited to ${MAX_SECTION_IMAGES} images. Delete existing images before uploading more.`,
+        },
+        { status: 400 }
+      );
+    }
+
     const { data, error } = await supabase
       .from("projects")
       .update(updates)

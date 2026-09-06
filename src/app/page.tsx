@@ -71,13 +71,37 @@ export default function HomePage() {
   // Gallery projects are only completed records created for the showcase.
   const galleryProjects = dbProjects.filter((p) => p.status === "completed");
 
-  // Gallery items filtered by category
+  const getGalleryCategory = (category: string) => {
+    const normalizedCategory = category.toLowerCase();
+
+    if (normalizedCategory.includes("elevation") || normalizedCategory.includes("3d")) {
+      return "3D Elevations";
+    }
+    if (normalizedCategory.includes("interior")) {
+      return "Interiors";
+    }
+    if (
+      normalizedCategory.includes("plan") ||
+      normalizedCategory.includes("blueprint") ||
+      normalizedCategory.includes("vastu")
+    ) {
+      return "Vastu Plans";
+    }
+    if (
+      normalizedCategory.includes("construction") ||
+      normalizedCategory.includes("building") ||
+      normalizedCategory.includes("commercial")
+    ) {
+      return "Construction";
+    }
+
+    return category;
+  };
+
+  // Show only category labels represented by completed admin gallery records.
   const galleryCategories = [
     "All",
-    "Construction",
-    "3D Elevations",
-    "Interiors",
-    "Vastu Plans",
+    ...Array.from(new Set(galleryProjects.map((project) => getGalleryCategory(project.category)))),
   ];
 
   const filteredGalleryProjects = galleryProjects.filter((p) => {
@@ -97,7 +121,7 @@ export default function HomePage() {
       return category.includes("plan") || category.includes("blueprint") || category.includes("vastu");
     }
 
-    return false;
+    return category === selectedCategory.toLowerCase();
   });
 
   // Handle WhatsApp Contact Submission

@@ -1,19 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { uploadToCloudinary, getOptimizedImageUrl, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from "@/lib/cloudinary";
+import {
+  uploadToCloudinary,
+  getOptimizedImageUrl,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_MB,
+} from "@/lib/cloudinary";
 import { Upload, X, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 
 interface ImageUploaderProps {
   value: string;
   onChange: (url: string) => void;
   label?: string;
+  canUpload?: boolean;
 }
 
 export default function ImageUploader({
   value,
   onChange,
   label = "Cover Image (Max 5MB)",
+  canUpload = true,
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -23,6 +30,12 @@ export default function ImageUploader({
     if (!file) return;
 
     setErrorMessage(null);
+
+    if (!canUpload) {
+      setErrorMessage("This project already has the maximum of 20 images. Remove an image before changing the cover.");
+      e.target.value = "";
+      return;
+    }
 
     // Enforce 5MB size limit check before network upload
     if (file.size > MAX_FILE_SIZE_BYTES) {
