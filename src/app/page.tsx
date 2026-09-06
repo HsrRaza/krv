@@ -68,8 +68,8 @@ export default function HomePage() {
   // Filter projects for Work In Progress section
   const inProgressProjects = dbProjects.filter((p) => p.status === "in_progress");
 
-  // Gallery projects strictly exclude work in progress items
-  const galleryProjects = dbProjects.filter((p) => p.status !== "in_progress");
+  // Gallery projects are only completed records created for the showcase.
+  const galleryProjects = dbProjects.filter((p) => p.status === "completed");
 
   // Gallery items filtered by category
   const galleryCategories = [
@@ -82,7 +82,22 @@ export default function HomePage() {
 
   const filteredGalleryProjects = galleryProjects.filter((p) => {
     if (selectedCategory === "All") return true;
-    return p.category.toLowerCase().includes(selectedCategory.toLowerCase());
+
+    const category = p.category.toLowerCase();
+    if (selectedCategory === "Construction") {
+      return category.includes("construction") || category.includes("building") || category.includes("commercial");
+    }
+    if (selectedCategory === "3D Elevations") {
+      return category.includes("elevation") || category.includes("3d");
+    }
+    if (selectedCategory === "Interiors") {
+      return category.includes("interior");
+    }
+    if (selectedCategory === "Vastu Plans") {
+      return category.includes("plan") || category.includes("blueprint") || category.includes("vastu");
+    }
+
+    return false;
   });
 
   // Handle WhatsApp Contact Submission

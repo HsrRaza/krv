@@ -48,8 +48,8 @@ export default function AdminGalleryPage() {
       const res = await fetch("/api/admin/projects");
       const json = await res.json();
       if (res.ok && json.projects) {
-        // Exclude work in progress projects from gallery view
-        const galleryItemsOnly = json.projects.filter((p: Project) => p.status !== "in_progress");
+        // Gallery manager contains only completed showcase records.
+        const galleryItemsOnly = json.projects.filter((p: Project) => p.status === "completed");
         setProjects(galleryItemsOnly);
       }
     } catch (e) {
