@@ -1,308 +1,465 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useState, useEffect } from "react";
-import { Project, ProjectStatus, ConstructionPhase } from "@/types/database";
+import { useEffect, useState } from "react";
+import { X, Loader2, AlertCircle } from "lucide-react";
+
+import type {
+  Project,
+  ProjectStatus,
+  ConstructionPhase,
+} from "@/types/database";
+
 import ImageUploader from "./ImageUploader";
 import MultiImageUploader from "./MultiImageUploader";
-import { MAX_PROJECT_IMAGES, MAX_SECTION_IMAGES } from "@/lib/cloudinary";
-import { Building2, X, Loader2, Layers } from "lucide-react";
+
+import {
+  CONSTRUCTION_PHASES,
+  PROJECT_CATEGORIES,
+} from "@/lib/project-options";
+
+export const CATEGORY_OPTIONS: string[] = [...PROJECT_CATEGORIES];
 
 export const PHASE_OPTIONS: ConstructionPhase[] = [
-  "Site Excavation & Earthwork",
-  "Foundation & Column Casting",
-  "Brickwork, Lintels & Slab Casting",
-  "Plastering & Electrical Concealing",
-  "Flooring & Tile Work",
-  "Interior Finishing & Handover",
-];
-
-export const CATEGORY_OPTIONS = [
-  "Residential Villa",
-  "Commercial Complex",
-  "3D Elevation",
-  "Interior Design",
-  "Structural Construction",
-  "Vastu Layout",
+  ...CONSTRUCTION_PHASES,
 ];
 
 interface ProjectModalProps {
   isOpen: boolean;
-  editingProject: Project | null;
   onClose: () => void;
-  onSave: (payload: any, editingId?: string) => Promise<void>;
-  inProgressImageCount?: number;
-  completedImageCount?: number;
+  onSave: (
+    project: {
+      title: string;
+      category: string;
+      location: string;
+      status: ProjectStatus;
+      current_phase: string | null;
+      description: string | null;
+      cover_image: string;
+      gallery_images: string[];
+    },
+    id?: string
+  ) => Promise<void>;
+  editingProject?: Project | null;
 }
 
 export default function ProjectModal({
   isOpen,
-  editingProject,
   onClose,
   onSave,
-  inProgressImageCount = 0,
-  completedImageCount = 0,
+  editingProject = null,
 }: ProjectModalProps) {
+  const [projectId, setProjectId] = useState("");
+
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState(CATEGORY_OPTIONS[0]);
+  const [category, setCategory] = useState<string>(
+    CATEGORY_OPTIONS[0] ?? ""
+  );
   const [location, setLocation] = useState("Ramanagara");
-  const [status, setStatus] = useState<ProjectStatus>("in_progress");
-  const [currentPhase, setCurrentPhase] = useState<string>(PHASE_OPTIONS[0]);
+
+  const [status, setStatus] =
+    useState<ProjectStatus>("in_progress");
+
+  const [currentPhase, setCurrentPhase] =
+    useState<string>(PHASE_OPTIONS[0] ?? "");
+
   const [description, setDescription] = useState("");
+
   const [coverImage, setCoverImage] = useState("");
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] =
+    useState<string | null>(null);
+
+  /*
+   * Generate the project ID before uploading images.
+   *
+   * New project:
+   *   projectId = new UUID
+   *
+   * Existing project:
+   *   projectId = existing D1 project ID
+   *
+   * R2 structure:
+   *   projects/{projectId}/cover.webp
+   *   projects/{projectId}/gallery/{imageId}.webp
+   */
   useEffect(() => {
+    if (!isOpen) return;
+
+    setErrorMessage(null);
+
     if (editingProject) {
+      setProjectId(editingProject.id);
       setTitle(editingProject.title);
       setCategory(editingProject.category);
       setLocation(editingProject.location);
       setStatus(editingProject.status);
-      setCurrentPhase(editingProject.current_phase || PHASE_OPTIONS[0]);
+      setCurrentPhase(
+        editingProject.current_phase || PHASE_OPTIONS[0] || ""
+      );
       setDescription(editingProject.description || "");
-      setCoverImage(editingProject.cover_image);
+      setCoverImage(editingProject.cover_image || "");
       setGalleryImages(editingProject.gallery_images || []);
     } else {
+      setProjectId(crypto.randomUUID());
       setTitle("");
-      setCategory(CATEGORY_OPTIONS[0]);
+      setCategory(CATEGORY_OPTIONS[0] ?? "");
       setLocation("Ramanagara");
       setStatus("in_progress");
-      setCurrentPhase(PHASE_OPTIONS[0]);
+      setCurrentPhase(PHASE_OPTIONS[0] ?? "");
       setDescription("");
       setCoverImage("");
       setGalleryImages([]);
     }
-    setErrorMessage(null);
-  }, [editingProject, isOpen]);
+  }, [isOpen, editingProject]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
-  const currentProjectImageCount = (coverImage ? 1 : 0) + galleryImages.length;
-  const totalForSelectedSection =
-    status === "in_progress" ? inProgressImageCount : completedImageCount;
-  const currentProjectSectionCount =
-    editingProject?.status === status ? currentProjectImageCount : 0;
-  const otherSectionImageCount = totalForSelectedSection - currentProjectSectionCount;
-  const sectionSlots = Math.max(MAX_SECTION_IMAGES - otherSectionImageCount, 0);
-  const maxImagesForThisProject = Math.min(
-    MAX_PROJECT_IMAGES,
-    currentProjectImageCount + sectionSlots
-  );
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    if (!title.trim()) {
-      setErrorMessage("Project Title is required.");
-      return;
-    }
-    if (!coverImage) {
-      setErrorMessage("Please upload a cover image.");
-      return;
-    }
-    if (1 + galleryImages.length > MAX_PROJECT_IMAGES) {
+
+    setErrorMessage(null);
+
+    if (!projectId) {
       setErrorMessage(
-        `A project can contain a maximum of ${MAX_PROJECT_IMAGES} images including the cover. Remove existing images before saving.`
+        "Project ID could not be generated."
+      );
+      return;
+    }
+
+    if (!title.trim()) {
+      setErrorMessage("Project title is required.");
+      return;
+    }
+
+    if (!coverImage.trim()) {
+      setErrorMessage(
+        "Please upload a cover image."
       );
       return;
     }
 
     setSubmitting(true);
-    setErrorMessage(null);
 
     try {
       const payload = {
-        title,
-        category,
-        location,
+        title: title.trim(),
+        category: category.trim(),
+        location: location.trim(),
         status,
-        current_phase: status === "in_progress" ? currentPhase : null,
-        description,
+
+        current_phase:
+          status === "in_progress"
+            ? currentPhase
+            : null,
+
+        description:
+          description.trim() || null,
+
         cover_image: coverImage,
         gallery_images: galleryImages,
       };
 
-      await onSave(payload, editingProject?.id);
+      /*
+       * Existing project:
+       *   editingProject.id
+       *
+       * New project:
+       *   generated projectId
+       *
+       * The same ID is used for the R2 paths.
+       */
+      await onSave(
+        payload,
+        editingProject?.id || projectId
+      );
+
       onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message || "Failed to save project.");
+    } catch (error) {
+      console.error(
+        "Project save error:",
+        error
+      );
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to save project."
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
+  const handleClose = () => {
+    if (submitting) return;
+
+    setErrorMessage(null);
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white w-full max-w-2xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden my-8">
-        {/* Modal Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-amber-600" />
-            <h3 className="text-lg font-bold text-slate-900">
-              {editingProject ? "Edit Project Details" : "Create New Project"}
-            </h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
+      <div className="relative flex max-h-[92vh] sm:max-h-[95vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 sm:py-5">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+              {editingProject
+                ? "Edit Project"
+                : "Add New Project"}
+            </h2>
+
+            <p className="mt-0.5 text-xs sm:text-sm text-slate-500">
+              {editingProject
+                ? "Update project details and images."
+                : "Add a new construction project."}
+            </p>
           </div>
+
           <button
-            onClick={onClose}
-            className="p-1.5 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 transition"
+            type="button"
+            onClick={handleClose}
+            disabled={submitting}
+            className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            aria-label="Close modal"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
-          {errorMessage && (
-            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
-              {errorMessage}
-            </div>
-          )}
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 overflow-y-auto"
+        >
+          <div className="space-y-5 sm:space-y-6 p-4 sm:p-6">
+            {/* Error */}
+            {errorMessage && (
+              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Project Title *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Ramanagara Flagship Villa"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white"
-              />
-            </div>
+            {/* Project Information */}
+            <div className="space-y-4">
+              <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700">
+                Project Information
+              </h3>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Location *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Extension Mohalla, Ramanagara"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white"
-              />
-            </div>
-          </div>
+              {/* Title */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Project Title *
+                </label>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Category *
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white"
-              >
-                {CATEGORY_OPTIONS.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) =>
+                    setTitle(e.target.value)
+                  }
+                  placeholder="e.g. Modern Villa"
+                  disabled={submitting}
+                  className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:bg-slate-100"
+                />
+              </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Status *
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStatus("in_progress")}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition ${
-                    status === "in_progress"
-                      ? "bg-amber-600 text-white border-amber-600 shadow-sm"
-                      : "bg-stone-50 text-slate-700 border-slate-200"
-                  }`}
-                >
-                  In Progress
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatus("completed")}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition ${
-                    status === "completed"
-                      ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                      : "bg-stone-50 text-slate-700 border-slate-200"
-                  }`}
-                >
-                  Completed
-                </button>
+              {/* Category + Location */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Category *
+                  </label>
+
+                  <select
+                    value={category}
+                    onChange={(e) =>
+                      setCategory(e.target.value)
+                    }
+                    disabled={submitting}
+                    className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:bg-slate-100 font-medium"
+                  >
+                    {CATEGORY_OPTIONS.map(
+                      (option) => (
+                        <option
+                          key={option}
+                          value={option}
+                        >
+                          {option}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Location *
+                  </label>
+
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) =>
+                      setLocation(e.target.value)
+                    }
+                    placeholder="e.g. Ramanagara"
+                    disabled={submitting}
+                    className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:bg-slate-100"
+                  />
+                </div>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Project Status *
+                </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setStatus("in_progress")
+                    }
+                    disabled={submitting}
+                    className={`rounded-lg border px-4 py-3 text-xs sm:text-sm font-semibold transition cursor-pointer ${status === "in_progress"
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-300 bg-white text-slate-700 hover:border-slate-500"
+                      }`}
+                  >
+                    Work in Progress
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setStatus("completed")
+                    }
+                    disabled={submitting}
+                    className={`rounded-lg border px-4 py-3 text-xs sm:text-sm font-semibold transition cursor-pointer ${status === "completed"
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-300 bg-white text-slate-700 hover:border-slate-500"
+                      }`}
+                  >
+                    Completed
+                  </button>
+                </div>
+              </div>
+
+              {/* Current Phase */}
+              {status === "in_progress" && (
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Current Construction Phase *
+                  </label>
+
+                  <select
+                    value={currentPhase}
+                    onChange={(e) =>
+                      setCurrentPhase(
+                        e.target.value
+                      )
+                    }
+                    disabled={submitting}
+                    className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:bg-slate-100"
+                  >
+                    {PHASE_OPTIONS.map(
+                      (phase) => (
+                        <option
+                          key={phase}
+                          value={phase}
+                        >
+                          {phase}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              )}
+
+              {/* Description */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Description
+                </label>
+
+                <textarea
+                  value={description}
+                  onChange={(e) =>
+                    setDescription(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Describe the project..."
+                  rows={4}
+                  disabled={submitting}
+                  className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:bg-slate-100"
+                />
               </div>
             </div>
-          </div>
 
-          {/* Current Phase Dropdown (Visible only when status === 'in_progress') */}
-          {status === "in_progress" && (
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-amber-800 mb-1.5 flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-amber-600" />
-                <span>Current Execution Phase *</span>
-              </label>
-              <select
-                value={currentPhase}
-                onChange={(e) => setCurrentPhase(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-amber-50/60 border border-amber-200 text-sm text-amber-900 font-semibold focus:outline-none focus:border-amber-600"
-              >
-                {PHASE_OPTIONS.map((phase) => (
-                  <option key={phase} value={phase}>
-                    {phase}
-                  </option>
-                ))}
-              </select>
+            {/* Images */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700">
+                  Project Images
+                </h3>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Upload a cover image and as many gallery images as needed.
+                </p>
+              </div>
+
+              {/* Cover */}
+              <ImageUploader
+                value={coverImage}
+                onChange={setCoverImage}
+                projectId={projectId}
+              />
+
+              {/* Gallery */}
+              <MultiImageUploader
+                values={galleryImages}
+                onChange={setGalleryImages}
+                projectId={projectId}
+              />
             </div>
-          )}
-
-          {/* Cover Image Component */}
-          <ImageUploader
-            value={coverImage}
-            onChange={setCoverImage}
-            canUpload={Boolean(coverImage) || sectionSlots > 0}
-          />
-
-          {/* Gallery Images Component */}
-          <MultiImageUploader
-            values={galleryImages}
-            onChange={setGalleryImages}
-            coverImage={coverImage}
-            maxImages={maxImagesForThisProject}
-          />
-
-          {/* Description */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Description / Project Specifications
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Architectural specs, materials used, client requirements..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white"
-            />
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+          {/* Footer */}
+          <div className="sticky bottom-0 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-slate-200 bg-white px-4 sm:px-6 py-3.5 sm:py-4">
             <button
               type="button"
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition"
+              onClick={handleClose}
+              disabled={submitting}
+              className="w-full sm:w-auto justify-center rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             >
               Cancel
             </button>
+
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-600/20 transition flex items-center gap-2 disabled:opacity-50"
+              className="w-full sm:w-auto justify-center flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
-              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              <span>{editingProject ? "Update Project" : "Save Project"}</span>
+              {submitting && (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              )}
+
+              {submitting
+                ? "Saving..."
+                : editingProject
+                  ? "Update Project"
+                  : "Create Project"}
             </button>
           </div>
         </form>

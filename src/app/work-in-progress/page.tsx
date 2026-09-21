@@ -1,17 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
 import { Project } from "@/types/database";
-import { getOptimizedImageUrl } from "@/lib/cloudinary";
+import { getMediaUrl } from "@/lib/media";
 import {
   HardHat,
-  Sparkles,
   MapPin,
   Clock,
-  CheckCircle2,
   Maximize2,
   X,
   MessageSquare,
@@ -32,12 +30,25 @@ interface DisplayProgressProject {
   desc: string;
 }
 
-export default function WorkInProgressPage() {
-  const [inProgressProjects, setInProgressProjects] = useState<DisplayProgressProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeModalItem, setActiveModalItem] = useState<DisplayProgressProject | null>(null);
+interface ProjectImage {
+  id: string;
+  project_id: string;
+  object_key: string;
+  image_type: string;
+  sort_order: number;
+  created_at: string;
+}
 
-  const supabase = createClient();
+const WORKER_URL =
+  process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || "";
+
+export default function WorkInProgressPage() {
+  const [inProgressProjects, setInProgressProjects] = useState<
+    DisplayProgressProject[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [activeModalItem, setActiveModalItem] =
+    useState<DisplayProgressProject | null>(null);
 
   useEffect(() => {
     fetchInProgressData();
@@ -45,32 +56,91 @@ export default function WorkInProgressPage() {
 
   const fetchInProgressData = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await (supabase.from("projects") as any)
-        .select("*")
-        .eq("status", "in_progress")
-        .order("created_at", { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        const mapped: DisplayProgressProject[] = data.map((p: Project) => ({
-          id: p.id,
-          title: p.title,
-          category: p.category,
-          location: p.location,
-          img: p.cover_image,
-          galleryImages: p.gallery_images || [],
-          currentPhase: p.current_phase || "Structural Civil Construction",
-          desc: p.description || "Active job site under execution by KRV Builders engineers.",
-        }));
-        setInProgressProjects(mapped);
-      } else {
-        setInProgressProjects([]);
+    try {
+      const response = await fetch("/api/admin/projects", {
+        cache: "no-store",
+      });
+
+      const json = (await response.json()) as {
+        projects?: Project[];
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(json.error || "Failed to fetch projects.");
       }
-    } catch (err) {
-      console.error("Error fetching work in progress data:", err);
+
+      const projects = json.projects || [];
+
+      const activeProjects = projects.filter(
+        (project) => project.status === "in_progress"
+      );
+
+      const mapped = await Promise.all(
+        activeProjects.map(async (project) => {
+          let galleryImages: string[] = [];
+
+          try {
+            const imagesResponse = await fetch(
+              `/api/admin/projects/${encodeURIComponent(project.id)}/images`,
+              {
+                cache: "no-store",
+              }
+            );
+
+            if (imagesResponse.ok) {
+              const imagesJson = (await imagesResponse.json()) as {
+                images?: ProjectImage[];
+              };
+
+              galleryImages = (imagesJson.images || [])
+                .filter(
+                  (image) =>
+                    image.image_type === "gallery" &&
+                    Boolean(image.object_key)
+                )
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((image) => image.object_key);
+            }
+          } catch (error) {
+            console.error(
+              `Failed to fetch images for project ${project.id}:`,
+              error
+            );
+          }
+
+          // Keep the project's existing gallery_images as a fallback.
+          if (
+            galleryImages.length === 0 &&
+            Array.isArray(project.gallery_images)
+          ) {
+            galleryImages = project.gallery_images.filter(Boolean);
+          }
+
+          return {
+            id: project.id,
+            title: project.title,
+            category: project.category,
+            location: project.location,
+            img: project.cover_image,
+            galleryImages,
+            currentPhase:
+              project.current_phase || "Structural Civil Construction",
+            desc:
+              project.description ||
+              "Active job site under execution by KRV Builders engineers.",
+          };
+        })
+      );
+
+      setInProgressProjects(mapped);
+    } catch (error) {
+      console.error("Error fetching work in progress data:", error);
       setInProgressProjects([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -79,6 +149,7 @@ export default function WorkInProgressPage() {
       <section className="relative overflow-hidden bg-[#18211f] text-white border-b border-[#34413c]">
         <div className="absolute inset-0 opacity-[0.12] bg-[linear-gradient(#d9b56d_1px,transparent_1px),linear-gradient(90deg,#d9b56d_1px,transparent_1px)] bg-size-[56px_56px]" />
         <div className="absolute -right-32 -top-40 h-96 w-96 rounded-full border border-amber-200/20" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 grid lg:grid-cols-[1fr_260px] gap-10 items-end">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -90,18 +161,30 @@ export default function WorkInProgressPage() {
               <HardHat className="w-4 h-4" />
               <span>Live Job Sites & Active Civil Execution</span>
             </div>
+
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[0.98]">
-              Work in progress.<br />
+              Work in progress.
+              <br />
               <span className="text-amber-300">Built in public.</span>
             </h1>
+
             <p className="text-[#c5cfca] text-sm sm:text-base max-w-2xl font-normal leading-relaxed">
-              Follow the active sites taking shape across Ramanagara, from structural execution to the final finish. Progress is updated directly by the KRV team.
+              Follow the active sites taking shape across Ramanagara, from
+              structural execution to the final finish. Progress is updated
+              directly by the KRV team.
             </p>
           </motion.div>
+
           <div className="border-l border-amber-200/25 pl-5 space-y-2">
-            <div className="text-4xl font-extrabold text-white">{inProgressProjects.length.toString().padStart(2, "0")}</div>
-            <div className="text-[11px] uppercase tracking-[0.18em] text-[#aab7b0]">Active sites</div>
-            <div className="text-xs leading-relaxed text-[#aab7b0]">Live construction updates from our field team.</div>
+            <div className="text-4xl font-extrabold text-white">
+              {inProgressProjects.length.toString().padStart(2, "0")}
+            </div>
+            <div className="text-[11px] uppercase tracking-[0.18em] text-[#aab7b0]">
+              Active sites
+            </div>
+            <div className="text-xs leading-relaxed text-[#aab7b0]">
+              Live construction updates from our field team.
+            </div>
           </div>
         </div>
       </section>
@@ -113,8 +196,11 @@ export default function WorkInProgressPage() {
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
               Active Job Sites ({inProgressProjects.length})
             </h2>
-            <p className="text-xs text-slate-500 mt-1">Live execution phases & structural status</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Live execution phases & structural status
+            </p>
           </div>
+
           <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
             Live On-Site Activity
@@ -124,13 +210,19 @@ export default function WorkInProgressPage() {
         {loading ? (
           <div className="py-20 text-center text-slate-500 flex flex-col items-center gap-3">
             <Loader2 className="w-8 h-8 text-amber-600 animate-spin" />
-            <span className="text-sm font-medium">Fetching active job sites from admin panel...</span>
+            <span className="text-sm font-medium">
+              Fetching active job sites from admin panel...
+            </span>
           </div>
         ) : inProgressProjects.length === 0 ? (
           <div className="py-16 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
             <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-2" />
-            <div className="text-base font-bold text-slate-800">No Active Sites at Present</div>
-            <p className="text-xs text-slate-500 mt-1">Check back soon or contact us to start your construction.</p>
+            <div className="text-base font-bold text-slate-800">
+              No Active Sites at Present
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Check back soon or contact us to start your construction.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
@@ -145,11 +237,18 @@ export default function WorkInProgressPage() {
               >
                 <div>
                   <div className="relative h-72 overflow-hidden bg-slate-900">
-                    <img
-                      src={getOptimizedImageUrl(project.img, 800)}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                    {project.img ? (
+                      <img
+                        src={getMediaUrl(project.img)}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-500">
+                        <Building2 className="w-12 h-12" />
+                      </div>
+                    )}
+
                     <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/40 transition-colors" />
 
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
@@ -171,9 +270,11 @@ export default function WorkInProgressPage() {
                     <span className="text-[10px] font-extrabold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 uppercase tracking-architectural">
                       {project.category}
                     </span>
+
                     <h3 className="text-xl font-bold text-slate-900 mt-2 group-hover:text-amber-600 transition-colors">
                       {project.title}
                     </h3>
+
                     <p className="text-xs text-slate-500 mt-1 font-medium flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-amber-600" />
                       <span>{project.location}</span>
@@ -184,6 +285,7 @@ export default function WorkInProgressPage() {
                         <Clock className="w-3 h-3 text-amber-600" />
                         Current Execution Phase:
                       </div>
+
                       <div className="text-xs font-extrabold text-slate-900">
                         {project.currentPhase}
                       </div>
@@ -221,11 +323,20 @@ export default function WorkInProgressPage() {
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
+
             <div>
-              <h3 className="text-xl font-bold text-white">KRV On-Site Engineering Standards</h3>
-              <p className="text-slate-300 text-sm mt-1">Every active job site undergoes weekly concrete cube compression tests, rebar spacing checks, and Vastu alignment audits.</p>
+              <h3 className="text-xl font-bold text-white">
+                KRV On-Site Engineering Standards
+              </h3>
+
+              <p className="text-slate-300 text-sm mt-1">
+                Every active job site undergoes weekly concrete cube
+                compression tests, rebar spacing checks, and Vastu alignment
+                audits.
+              </p>
             </div>
           </div>
+
           <Link
             href="/contact"
             className="px-6 py-3.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm hover:bg-amber-400 transition shadow-md shrink-0 flex items-center gap-2"
@@ -263,22 +374,23 @@ export default function WorkInProgressPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12">
                 <div className="lg:col-span-7 bg-slate-950 min-h-[300px] lg:min-h-[450px] relative flex flex-col justify-center p-4">
                   <img
-                    src={getOptimizedImageUrl(activeModalItem.img, 1200)}
+                    src={getMediaUrl(activeModalItem.img)}
                     alt={activeModalItem.title}
                     className="w-full h-full object-contain max-h-[400px] rounded-2xl"
                   />
+
                   {activeModalItem.galleryImages.length > 0 && (
                     <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-                      {activeModalItem.galleryImages.map((gUrl, idx) => (
+                      {activeModalItem.galleryImages.map((objectKey, idx) => (
                         <img
-                          key={idx}
-                          src={getOptimizedImageUrl(gUrl, 300)}
-                          alt={`Site photo ${idx}`}
+                          key={`${objectKey}-${idx}`}
+                          src={getMediaUrl(objectKey)}
+                          alt={`Site photo ${idx + 1}`}
                           className="w-16 h-16 object-cover rounded-xl border border-slate-800 shrink-0 cursor-pointer hover:border-amber-500 transition"
                           onClick={() =>
                             setActiveModalItem({
                               ...activeModalItem,
-                              img: gUrl,
+                              img: objectKey,
                             })
                           }
                         />
@@ -286,14 +398,17 @@ export default function WorkInProgressPage() {
                     </div>
                   )}
                 </div>
+
                 <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
                   <div>
                     <span className="text-xs font-bold text-amber-600 uppercase tracking-wider bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
                       Active Job Site
                     </span>
+
                     <h2 className="text-2xl font-extrabold text-slate-900 mt-3">
                       {activeModalItem.title}
                     </h2>
+
                     <p className="text-xs text-slate-500 font-semibold mt-1 flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-amber-600" />
                       <span>{activeModalItem.location}</span>
@@ -303,6 +418,7 @@ export default function WorkInProgressPage() {
                       <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">
                         Current Execution Phase:
                       </div>
+
                       <div className="text-sm font-extrabold text-slate-900">
                         {activeModalItem.currentPhase}
                       </div>

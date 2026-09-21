@@ -7,7 +7,11 @@ import { Building2, Phone, Mail, MapPin, ArrowRight, ShieldCheck, HardHat } from
 export default function Footer() {
   const pathname = usePathname();
 
-  if (pathname?.startsWith("/admin")) {
+  if (
+    pathname?.startsWith("/admin") ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password"
+  ) {
     return null;
   }
   return (

@@ -1,160 +1,375 @@
 "use client";
 
-import { useState } from "react";
-import {
-  uploadToCloudinary,
-  getOptimizedImageUrl,
-  MAX_FILE_SIZE_BYTES,
-  MAX_FILE_SIZE_MB,
-  MAX_PROJECT_IMAGES,
-} from "@/lib/cloudinary";
-import { Image as ImageIcon, X, Loader2, AlertCircle } from "lucide-react";
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { Upload, X, Loader2, ImagePlus } from "lucide-react";
+import { getMediaUrl } from "@/lib/media";
 
 interface MultiImageUploaderProps {
   values: string[];
-  onChange: (urls: string[]) => void;
+  onChange: (values: string[]) => void;
   label?: string;
+  projectId: string;
+
+  // Kept for compatibility with the existing ProjectModal.
+  // Gallery uploader does not use this value.
   coverImage?: string;
-  maxImages?: number;
+}
+
+interface UploadingImage {
+  id: string;
+  name: string;
+  progress: number;
+}
+
+interface UploadResponse {
+  object_key?: string;
+  error?: string;
+}
+
+
+
+async function convertToWebP(file: File): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const image = new window.Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        reject(new Error("Could not create canvas context"));
+        return;
+      }
+
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      context.drawImage(image, 0, 0);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Could not convert image to WebP"));
+            return;
+          }
+
+          resolve(blob);
+        },
+        "image/webp",
+        0.8
+      );
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Could not load image"));
+    };
+
+    image.src = objectUrl;
+  });
+}
+
+async function uploadImageToR2(
+  file: File,
+  projectId: string,
+  imageId: string
+): Promise<string> {
+  const webpBlob = await convertToWebP(file);
+
+  const objectKey = `projects/${projectId}/gallery/${imageId}.webp`;
+
+  const formData = new FormData();
+
+  formData.append(
+    "file",
+    new File([webpBlob], `${imageId}.webp`, {
+      type: "image/webp",
+    })
+  );
+
+  formData.append("object_key", objectKey);
+
+  const response = await fetch("/api/admin/media", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = (await response
+    .json()
+    .catch(() => ({}))) as UploadResponse;
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to upload image");
+  }
+
+  return data.object_key || objectKey;
 }
 
 export default function MultiImageUploader({
   values,
   onChange,
-  label = "Gallery Photos (Site Progress Shots)",
-  coverImage = "",
-  maxImages = MAX_PROJECT_IMAGES,
+  label = "Gallery Images",
+  projectId,
+  coverImage: _coverImage,
 }: MultiImageUploaderProps) {
-  const [uploading, setUploading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const [uploading, setUploading] = useState<UploadingImage[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-    setErrorMessage(null);
-    const fileList = Array.from(files);
+  const isUploading = uploading.length > 0;
 
-    const currentImageCount = (coverImage ? 1 : 0) + values.length;
-    const availableSlots = maxImages - currentImageCount;
-    if (fileList.length > availableSlots) {
-      setErrorMessage(
-        `You can add only ${Math.max(availableSlots, 0)} more image(s). Delete existing images before uploading more.`
-      );
-      e.target.value = "";
-      return;
-    }
-
-    // Validate that no single file exceeds 5MB
-    const oversized = fileList.filter((f) => f.size > MAX_FILE_SIZE_BYTES);
-    if (oversized.length > 0) {
-      setErrorMessage(
-        `File "${oversized[0].name}" exceeds the ${MAX_FILE_SIZE_MB}MB maximum limit.`
-      );
-      e.target.value = "";
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const uploadPromises = fileList.map((file) => uploadToCloudinary(file));
-      const newUrls = await Promise.all(uploadPromises);
-      onChange([...values, ...newUrls]);
-    } catch (err: any) {
-      setErrorMessage(err.message || "Failed to upload gallery images.");
-    } finally {
-      setUploading(false);
-    }
+  const handleSelectFiles = () => {
+    inputRef.current?.click();
   };
 
-  const handleRemoveImage = async (indexToRemove: number) => {
-    const urlToRemove = values[indexToRemove];
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files || []);
 
-    // Purge from Cloudinary via API
-    try {
-      fetch("/api/admin/cloudinary-delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: urlToRemove }),
-      }).catch((err) => console.error("Cloudinary purge error:", err));
-    } catch (e) {
-      console.error(e);
+    if (files.length === 0) {
+      return;
     }
 
-    // Update parent state immediately
-    const updated = values.filter((_, idx) => idx !== indexToRemove);
-    onChange(updated);
+    setError(null);
+
+    const validFiles = files.filter((file) => {
+      if (!file.type.startsWith("image/")) {
+        setError(`${file.name} is not an image.`);
+        return false;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        setError(`${file.name} is larger than 5MB.`);
+        return false;
+      }
+
+      return true;
+    });
+
+    if (validFiles.length === 0) {
+      event.target.value = "";
+      return;
+    }
+
+    const uploadItems: UploadingImage[] = validFiles.map((file) => ({
+      id: crypto.randomUUID(),
+      name: file.name,
+      progress: 0,
+    }));
+
+    setUploading(uploadItems);
+
+    try {
+      const uploadedKeys: string[] = [];
+
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        const uploadItem = uploadItems[i];
+
+        setUploading((current) =>
+          current.map((item) =>
+            item.id === uploadItem.id
+              ? {
+                  ...item,
+                  progress: 25,
+                }
+              : item
+          )
+        );
+
+        const objectKey = await uploadImageToR2(
+          file,
+          projectId,
+          uploadItem.id
+        );
+
+        uploadedKeys.push(objectKey);
+
+        setUploading((current) =>
+          current.map((item) =>
+            item.id === uploadItem.id
+              ? {
+                  ...item,
+                  progress: 100,
+                }
+              : item
+          )
+        );
+      }
+
+      onChange([...values, ...uploadedKeys]);
+    } catch (err) {
+      console.error("Gallery upload error:", err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to upload gallery images."
+      );
+    } finally {
+      setTimeout(() => {
+        setUploading([]);
+      }, 500);
+    }
+
+    event.target.value = "";
+  };
+
+  const handleRemoveImage = (objectKey: string) => {
+    const updatedValues = values.filter((value) => value !== objectKey);
+
+    onChange(updatedValues);
   };
 
   return (
-    <div className="space-y-3">
-      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-        {label}
-      </label>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium text-gray-900">
+          {label}
+        </label>
 
-      {/* Error Alert Box */}
-      {errorMessage && (
-        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setErrorMessage(null)}
-            className="text-rose-600 hover:text-rose-900"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+        {values.length > 0 && (
+          <span className="text-xs text-gray-500">
+            {values.length} image{values.length === 1 ? "" : "s"}
+          </span>
+        )}
+      </div>
 
-      {/* Selector Trigger Button */}
-      <label className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-stone-50 hover:bg-amber-50/30 cursor-pointer text-xs font-bold text-slate-700 transition">
-        {uploading ? (
+      <button
+        type="button"
+        onClick={handleSelectFiles}
+        disabled={isUploading || !projectId}
+        className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-8 transition hover:border-gray-400 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isUploading ? (
           <>
-            <Loader2 className="w-4 h-4 text-amber-600 animate-spin" />
-            <span>Uploading images directly to Cloudinary...</span>
+            <Loader2 className="mb-2 h-8 w-8 animate-spin text-gray-500" />
+
+            <span className="text-sm font-medium text-gray-700">
+              Uploading images...
+            </span>
+
+            <span className="mt-1 text-xs text-gray-500">
+              Please wait
+            </span>
           </>
         ) : (
           <>
-            <ImageIcon className="w-4 h-4 text-amber-600" />
-            <span>Select Multiple Photos (Max 5MB each)</span>
+            <ImagePlus className="mb-2 h-8 w-8 text-gray-500" />
+
+            <span className="text-sm font-medium text-gray-700">
+              Click to upload gallery images
+            </span>
+
+            <span className="mt-1 text-xs text-gray-500">
+              JPG, PNG or WebP • Maximum 5MB per image
+            </span>
+
+            <span className="mt-1 text-xs text-gray-500">
+              You can upload as many images as needed
+            </span>
           </>
         )}
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFilesChange}
-          disabled={uploading}
-          className="hidden"
-        />
-      </label>
+      </button>
 
-      {/* Thumbnail Grid */}
-      {values.length > 0 && (
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 pt-2">
-          {values.map((imgUrl, idx) => (
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      {uploading.length > 0 && (
+        <div className="space-y-2">
+          {uploading.map((item) => (
             <div
-              key={idx}
-              className="relative h-20 rounded-xl overflow-hidden border border-slate-200 shadow-sm group bg-slate-900"
+              key={item.id}
+              className="rounded-md border border-gray-200 bg-white p-3"
             >
-              <img
-                src={getOptimizedImageUrl(imgUrl, 300)}
-                alt={`Gallery ${idx}`}
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveImage(idx)}
-                className="absolute top-1 right-1 p-1 bg-rose-600 text-white rounded-full opacity-90 hover:opacity-100 shadow transition"
-                title="Remove photo"
-              >
-                <X className="w-3 h-3" />
-              </button>
+              <div className="mb-2 flex items-center justify-between">
+                <span className="max-w-[70%] truncate text-sm text-gray-700">
+                  {item.name}
+                </span>
+
+                <span className="text-xs text-gray-500">
+                  {item.progress}%
+                </span>
+              </div>
+
+              <div className="h-1.5 overflow-hidden rounded-full bg-gray-200">
+                <div
+                  className="h-full rounded-full bg-gray-900 transition-all duration-300"
+                  style={{
+                    width: `${item.progress}%`,
+                  }}
+                />
+              </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {values.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {values.map((objectKey, index) => {
+            const imageUrl = getMediaUrl(objectKey);
+
+            return (
+              <div
+                key={objectKey}
+                className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-100"
+              >
+                <Image
+                  src={imageUrl}
+                  alt={`Gallery image ${index + 1}`}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-cover"
+                  unoptimized
+                />
+
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(objectKey)}
+                  disabled={isUploading}
+                  className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white opacity-0 transition hover:bg-black disabled:cursor-not-allowed group-hover:opacity-100"
+                  aria-label="Remove image"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+
+                <div className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs text-white">
+                  {index + 1}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {values.length === 0 && !isUploading && (
+        <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 py-8">
+          <div className="text-center">
+            <Upload className="mx-auto mb-2 h-6 w-6 text-gray-400" />
+
+            <p className="text-sm text-gray-500">
+              No gallery images added yet
+            </p>
+          </div>
         </div>
       )}
     </div>

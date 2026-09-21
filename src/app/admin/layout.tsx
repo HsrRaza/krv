@@ -11,6 +11,7 @@ import {
   LogOut,
   ShieldCheck,
   User,
+  KeyRound,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -38,7 +39,6 @@ export default function AdminLayout({
   const isLoginPage = pathname === "/admin/login";
 
   const handleSignOut = async () => {
-    document.cookie = "krv_admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     await supabase.auth.signOut();
     router.push("/admin/login");
     router.refresh();
@@ -98,6 +98,18 @@ export default function AdminLayout({
                 <ImageIcon className="w-4 h-4 text-amber-600" />
                 <span>Gallery Showcase</span>
               </Link>
+
+              <Link
+                href="/admin/settings/security"
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
+                  pathname.startsWith("/admin/settings/security")
+                    ? "bg-amber-400 text-slate-950 shadow-sm"
+                    : "text-[#c5cfca] hover:text-white hover:bg-white/10"
+                }`}
+              >
+                <KeyRound className="w-4 h-4 text-amber-600" />
+                <span>Security</span>
+              </Link>
             </nav>
           </div>
 
@@ -141,7 +153,17 @@ export default function AdminLayout({
                 : "bg-white text-slate-700 border border-slate-200"
             }`}
           >
-            Gallery Manager
+            Gallery
+          </Link>
+          <Link
+            href="/admin/settings/security"
+            className={`flex-1 text-center py-2 rounded-lg text-xs font-bold ${
+              pathname.startsWith("/admin/settings/security")
+                ? "bg-amber-600 text-white"
+                : "bg-white text-slate-700 border border-slate-200"
+            }`}
+          >
+            Security
           </Link>
         </div>
       </header>

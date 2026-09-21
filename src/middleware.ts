@@ -35,10 +35,19 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const hasAdminCookie = request.cookies.get("krv_admin_session")?.value === "true";
-  const isAuthenticated = !!user || hasAdminCookie;
-
+  const isAuthenticated = !!user;
   const pathname = request.nextUrl.pathname;
+
+  // Protect /api/admin write operations (POST, PATCH, PUT, DELETE)
+  if (pathname.startsWith("/api/admin")) {
+    const isWriteRequest = request.method !== "GET";
+    if (isWriteRequest && !isAuthenticated) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access." },
+        { status: 401 }
+      );
+    }
+  }
 
   // Protect /admin routes (except /admin/login)
   if (pathname.startsWith("/admin")) {
@@ -68,5 +77,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/api/admin/:path*"],
 };

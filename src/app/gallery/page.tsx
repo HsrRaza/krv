@@ -1,359 +1,489 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
-import { Project } from "@/types/database";
-import { getOptimizedImageUrl } from "@/lib/cloudinary";
+import { useState, useEffect, useMemo } from "react";
+import type { Project } from "@/types/database";
+import { getMediaUrl } from "@/lib/media";
 import {
   Sparkles,
   Maximize2,
   X,
-  Building2,
-  CheckCircle2,
-  MessageSquare,
   Loader2,
+  Building2,
   MapPin,
+  Filter,
+  Image as ImageIcon,
+  AlertCircle,
+  RefreshCw,
   Compass,
 } from "lucide-react";
 
-type GalleryCategory = "all" | "3D Elevation" | "Plan" | "Interior Design";
+type GalleryCategoryTab =
+  | "All"
+  | "Vastu 2D & 3D Planning"
+  | "Elevation Design"
+  | "Structural Design"
+  | "Interior Design";
 
-interface DisplayProject {
+const CATEGORY_TABS: { id: GalleryCategoryTab; label: string }[] = [
+  { id: "All", label: "All Works" },
+  { id: "Vastu 2D & 3D Planning", label: "Vastu 2D & 3D Planning" },
+  { id: "Elevation Design", label: "Elevation Design" },
+  { id: "Structural Design", label: "Structural Design" },
+  { id: "Interior Design", label: "Interior Design" },
+];
+
+export interface GalleryItem {
   id: string;
+  projectId: string;
   title: string;
   category: string;
-  categoryName: string;
   location: string;
-  img: string;
-  galleryImages: string[];
-  desc: string;
-  details: string[];
-  status: "in_progress" | "completed";
+  description: string | null;
+  objectKey: string;
+  isCover: boolean;
 }
 
-export default function GalleryPage() {
-  const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>("all");
-  const [projectsList, setProjectsList] = useState<DisplayProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeModalItem, setActiveModalItem] = useState<DisplayProject | null>(null);
+type ProjectsResponse = {
+  projects?: Project[];
+  error?: string;
+};
 
-  const supabase = createClient();
+type ProjectImage = {
+  id: string;
+  project_id: string;
+  object_key: string;
+  image_type: "cover" | "gallery" | string;
+  sort_order: number;
+};
+
+type ImagesResponse = {
+  images?: ProjectImage[];
+  error?: string;
+};
+
+/**
+ * Normalizes a raw project category string to check matching for tabs.
+ */
+function matchesCategoryTab(rawCategory: string, tab: GalleryCategoryTab): boolean {
+  if (tab === "All") return true;
+
+  const cat = (rawCategory || "").toLowerCase().trim();
+
+  switch (tab) {
+    case "Vastu 2D & 3D Planning":
+      return (
+        cat.includes("vastu") ||
+        cat.includes("architectural") ||
+        cat.includes("planning") ||
+        cat.includes("2d") ||
+        cat.includes("3d")
+      );
+    case "Elevation Design":
+      return (
+        cat.includes("elevation") ||
+        cat.includes("exterior") ||
+        cat.includes("facade")
+      );
+    case "Structural Design":
+      return cat.includes("structural") || cat.includes("structure");
+    case "Interior Design":
+      return cat.includes("interior") || cat.includes("indoor");
+    default:
+      return true;
+  }
+}
+
+export default function PublicGalleryPage() {
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<GalleryCategoryTab>("All");
+  const [activeLightboxItem, setActiveLightboxItem] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
-    fetchLiveGalleryProjects();
+    fetchGalleryData();
   }, []);
 
-  const fetchLiveGalleryProjects = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await (supabase.from("projects") as any)
-        .select("*")
-        .eq("status", "completed")
-        .order("created_at", { ascending: false });
+  // Listen to Escape key to close Lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveLightboxItem(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
-      if (!error && data && data.length > 0) {
-        const mapped: DisplayProject[] = data.map((p: Project) => {
-          let catKey = "3D Elevation";
-          const catLower = (p.category || "").toLowerCase();
-          if (catLower.includes("plan") || catLower.includes("blueprint") || catLower.includes("vastu")) {
-            catKey = "Plan";
-          } else if (catLower.includes("interior")) {
-            catKey = "Interior Design";
-          } else if (catLower.includes("elevation") || catLower.includes("3d")) {
-            catKey = "3D Elevation";
-          } else {
-            catKey = p.category || "3D Elevation";
+  const fetchGalleryData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/admin/projects", { cache: "no-store" });
+      const json = (await res.json()) as ProjectsResponse;
+
+      if (!res.ok) {
+        throw new Error(json.error || "Failed to load gallery projects.");
+      }
+
+      const projectsList = json.projects || [];
+
+      // Extract all gallery images and cover images across projects
+      const galleryItemsList: GalleryItem[] = [];
+
+      await Promise.all(
+        projectsList.map(async (project) => {
+          // If project has project_images API available, fetch detailed records
+          try {
+            const imageRes = await fetch(
+              `/api/admin/projects/${encodeURIComponent(project.id)}/images`
+            );
+            if (imageRes.ok) {
+              const imageJson = (await imageRes.json()) as ImagesResponse;
+              const projectImages = imageJson.images || [];
+
+              if (projectImages.length > 0) {
+                projectImages.forEach((img) => {
+                  galleryItemsList.push({
+                    id: img.id,
+                    projectId: project.id,
+                    title: project.title,
+                    category: project.category || "Elevation Design",
+                    location: project.location || "Ramanagara",
+                    description: project.description || null,
+                    objectKey: img.object_key,
+                    isCover: img.image_type === "cover",
+                  });
+                });
+                return;
+              }
+            }
+          } catch {
+            // Fallback to project fields if images API fails
           }
 
-          return {
-            id: p.id,
-            title: p.title,
-            category: catKey,
-            categoryName: p.category || catKey,
-            location: p.location,
-            img: p.cover_image,
-            galleryImages: p.gallery_images || [],
-            desc: p.description || "Architectural design showcase by KRV Builders.",
-            details: [
-              `Category: ${p.category}`,
-              `Location: ${p.location}`,
-            ],
-            status: p.status,
-          };
-        });
-        setProjectsList(mapped);
-      } else {
-        setProjectsList([]);
+          // Fallback: cover_image and gallery_images from project model
+          if (project.cover_image) {
+            galleryItemsList.push({
+              id: `${project.id}-cover`,
+              projectId: project.id,
+              title: project.title,
+              category: project.category || "Elevation Design",
+              location: project.location || "Ramanagara",
+              description: project.description || null,
+              objectKey: project.cover_image,
+              isCover: true,
+            });
+          }
+
+          if (Array.isArray(project.gallery_images)) {
+            project.gallery_images.forEach((key, index) => {
+              if (key && key !== project.cover_image) {
+                galleryItemsList.push({
+                  id: `${project.id}-gallery-${index}`,
+                  projectId: project.id,
+                  title: project.title,
+                  category: project.category || "Elevation Design",
+                  location: project.location || "Ramanagara",
+                  description: project.description || null,
+                  objectKey: key,
+                  isCover: false,
+                });
+              }
+            });
+          }
+        })
+      );
+
+      // Deduplicate items by objectKey
+      const uniqueItems: GalleryItem[] = [];
+      const seenKeys = new Set<string>();
+
+      for (const item of galleryItemsList) {
+        if (item.objectKey && !seenKeys.has(item.objectKey)) {
+          seenKeys.add(item.objectKey);
+          uniqueItems.push(item);
+        }
       }
-    } catch (err) {
-      console.error("Error fetching gallery items:", err);
-      setProjectsList([]);
+
+      setItems(uniqueItems);
+    } catch (err: unknown) {
+      console.error("Public gallery loading error:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to load showcase gallery images."
+      );
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const filteredProjects = projectsList
-    .filter((p) => {
-      if (selectedCategory === "all") return true;
-      const catLower = (p.category || "").toLowerCase();
-      const targetLower = selectedCategory.toLowerCase();
+  // Filter items based on selected tab
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => matchesCategoryTab(item.category, activeTab));
+  }, [items, activeTab]);
 
-      if (selectedCategory === "Plan") {
-        return catLower.includes("plan") || catLower.includes("blueprint") || catLower.includes("vastu");
-      }
-      if (selectedCategory === "Interior Design") {
-        return catLower.includes("interior");
-      }
-      if (selectedCategory === "3D Elevation") {
-        return catLower.includes("elevation") || catLower.includes("3d") || (!catLower.includes("plan") && !catLower.includes("interior"));
-      }
-      return catLower.includes(targetLower);
+  // Tab count stats
+  const categoryCounts = useMemo(() => {
+    const counts: Record<GalleryCategoryTab, number> = {
+      All: items.length,
+      "Vastu 2D & 3D Planning": 0,
+      "Elevation Design": 0,
+      "Structural Design": 0,
+      "Interior Design": 0,
+    };
+
+    items.forEach((item) => {
+      if (matchesCategoryTab(item.category, "Vastu 2D & 3D Planning")) counts["Vastu 2D & 3D Planning"]++;
+      if (matchesCategoryTab(item.category, "Elevation Design")) counts["Elevation Design"]++;
+      if (matchesCategoryTab(item.category, "Structural Design")) counts["Structural Design"]++;
+      if (matchesCategoryTab(item.category, "Interior Design")) counts["Interior Design"]++;
     });
 
+    return counts;
+  }, [items]);
+
   return (
-    <div className="min-h-screen overflow-hidden bg-[#f4f1eb] text-slate-900 pb-24">
-      {/* HEADER HERO */}
-      <section className="relative overflow-hidden bg-[#18211f] text-white border-b border-[#34413c]">
-        <div className="absolute inset-0 opacity-[0.12] bg-[linear-gradient(#d9b56d_1px,transparent_1px),linear-gradient(90deg,#d9b56d_1px,transparent_1px)] bg-size-[56px_56px]" />
-        <div className="absolute -right-24 -top-32 h-96 w-96 rounded-full border border-amber-200/20" />
-        <div className="absolute -right-10 -top-16 h-64 w-64 rounded-full border border-amber-200/15" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 grid lg:grid-cols-[1fr_280px] gap-12 items-end">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col items-start gap-5 max-w-4xl"
-          >
-            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-300">
+    <main className="min-h-screen bg-[#0e1412] text-stone-100 py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-400 selection:text-slate-950">
+      <div className="max-w-7xl mx-auto space-y-10">
+        {/* Architectural Hero Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-[#141d1a] border border-[#263530] p-8 sm:p-12 shadow-2xl">
+          <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(#d9b56d_1px,transparent_1px),linear-gradient(90deg,#d9b56d_1px,transparent_1px)] bg-size-[40px_40px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 max-w-3xl space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-xs font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Selected works / KRV archive</span>
+              <span>Architectural Showcase & Portfolio</span>
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[0.98]">
-              Built to be <span className="text-amber-300">seen.</span>
+
+            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+              KRV Builders Design Gallery
             </h1>
-            <p className="text-[#c5cfca] text-sm sm:text-base max-w-2xl font-normal leading-relaxed">
-              A considered collection of elevations, plans, and interiors shaped by proportion, material, and the way people actually live.
+
+            <p className="text-base sm:text-lg text-stone-300 leading-relaxed font-normal">
+              Explore our curated portfolio of premium 3D front elevations, interior designs,
+              vastu architectural planning, and turnkey structural completed projects across Ramanagara.
             </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="border-l border-amber-200/25 pl-5 space-y-5"
-          >
-            <Compass className="w-7 h-7 text-amber-300" strokeWidth={1.5} />
-            <div>
-              <div className="text-3xl font-extrabold text-white">{projectsList.length.toString().padStart(2, "0")}</div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-[#aab7b0] mt-1">Published projects</div>
+
+            <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-stone-400 font-semibold">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-amber-400" />
+                <span>{items.length} Architectural Assets</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-amber-400" />
+                <span>Pinterest-Style Masonry Grid</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-amber-400" />
+                <span>Ramanagara & Vicinity</span>
+              </div>
             </div>
-            <div className="text-xs leading-relaxed text-[#aab7b0]">Updated by the KRV design team as new work is completed.</div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CATEGORY FILTER TABS & SHOWCASE GRID */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-7 relative z-20">
-        {/* Category Tabs: 3D Elevation, Plan, Interior Design */}
-        <div className="flex flex-wrap items-center gap-1.5 p-2 bg-white/90 backdrop-blur border border-slate-200 rounded-2xl shadow-lg shadow-slate-900/5 mb-12 w-fit max-w-full">
-          {[
-            { key: "all", label: "All Designs" },
-            { key: "3D Elevation", label: "3D Elevation" },
-            { key: "Plan", label: "Plans (2D/3D & Vastu)" },
-            { key: "Interior Design", label: "Interior Design" },
-          ].map((tab) => {
-            const isActive = selectedCategory === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setSelectedCategory(tab.key as GalleryCategory)}
-                className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                  isActive
-                    ? "bg-[#18211f] text-white shadow-md"
-                    : "text-slate-600 hover:bg-[#f4f1eb] hover:text-slate-900"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+          </div>
         </div>
 
-        {loading ? (
-          <div className="py-20 text-center text-slate-500 flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-amber-600 animate-spin" />
-            <span className="text-sm font-medium">Fetching gallery designs...</span>
-          </div>
-        ) : filteredProjects.length === 0 ? (
-          <div className="py-16 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
-            <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-2" />
-            <div className="text-base font-bold text-slate-800">No Gallery Designs Found</div>
-            <p className="text-xs text-slate-500 mt-1">Select another category or upload photos in the admin panel.</p>
-          </div>
-        ) : (
-          <motion.div layout className="columns-1 md:columns-2 xl:columns-3 gap-6">
-            <AnimatePresence>
-              {filteredProjects.map((project, idx) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  className="mb-6 break-inside-avoid rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 group flex flex-col justify-between transition-all duration-500"
+        {/* Category Navigation Bar */}
+        <div className="sticky top-20 z-30 bg-[#0e1412]/90 backdrop-blur-md py-3 border-b border-[#23302b]">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none no-scrollbar">
+            <div className="flex items-center gap-2 text-stone-400 text-xs font-bold px-2 shrink-0">
+              <Filter className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Filter:</span>
+            </div>
+
+            {CATEGORY_TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const count = categoryCounts[tab.id];
+
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer ${isActive
+                      ? "bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/20 scale-[1.02]"
+                      : "bg-[#182320] text-stone-300 hover:bg-[#23312c] hover:text-white border border-[#2b3b35]"
+                    }`}
                 >
-                  <div>
-                    <div className={`relative ${idx % 3 === 1 ? "h-80" : idx % 3 === 2 ? "h-60" : "h-72"} overflow-hidden bg-slate-900`}>
-                      <img
-                        src={getOptimizedImageUrl(project.img, 800)}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/40 transition-colors" />
+                  <span>{tab.label}</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-md text-[10px] font-extrabold ${isActive
+                        ? "bg-slate-950/20 text-slate-950"
+                        : "bg-stone-800/80 text-stone-400"
+                      }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-                      <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                        <span className="px-3 py-1.5 bg-white/95 text-slate-900 text-[10px] font-extrabold rounded-lg shadow-sm uppercase tracking-architectural">
-                          {project.categoryName}
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={() => setActiveModalItem(project)}
-                        className="absolute bottom-4 right-4 p-3 rounded-full bg-slate-900/90 text-white hover:bg-amber-500 hover:text-slate-950 transition shadow-lg opacity-90 hover:scale-110"
-                        title="Expand View"
-                      >
-                        <Maximize2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="p-5 sm:p-6">
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-700 transition-colors leading-snug">
-                        {project.title}
-                      </h3>
-                      <p className="text-xs text-slate-500 mt-1 font-medium flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-amber-600" />
-                        <span>{project.location}</span>
-                      </p>
-                      <p className="text-slate-600 text-sm mt-3 leading-relaxed line-clamp-2">
-                        {project.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-5 sm:p-6 pt-0 border-t border-slate-100 flex items-center justify-between mt-4">
-                    <button
-                      onClick={() => setActiveModalItem(project)}
-                      className="text-xs font-bold text-slate-700 hover:text-amber-700 transition-colors flex items-center gap-1"
-                    >
-                      View High-Res Photo ({1 + (project.galleryImages?.length || 0)})
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </section>
-
-      {/* LIGHTBOX MODAL */}
-      <AnimatePresence>
-        {activeModalItem && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto"
-            onClick={() => setActiveModalItem(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-4xl rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-2xl my-8"
+        {/* Error State */}
+        {error && (
+          <div className="p-6 rounded-2xl bg-rose-950/40 border border-rose-800/50 text-rose-200 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-6 h-6 text-rose-400 shrink-0" />
+              <div>
+                <h4 className="font-bold text-sm">Unable to Load Gallery Images</h4>
+                <p className="text-xs text-rose-300 mt-0.5">{error}</p>
+              </div>
+            </div>
+            <button
+              onClick={fetchGalleryData}
+              className="px-4 py-2 rounded-xl bg-rose-900/60 hover:bg-rose-800 text-white text-xs font-bold flex items-center gap-2 transition"
             >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry</span>
+            </button>
+          </div>
+        )}
+
+        {/* Loading State Skeleton */}
+        {loading && (
+          <div className="py-20 text-center flex flex-col items-center justify-center gap-4">
+            <Loader2 className="w-10 h-10 text-amber-400 animate-spin" />
+            <p className="text-sm font-semibold text-stone-400">
+              Loading architectural showcase images...
+            </p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && filteredItems.length === 0 && (
+          <div className="py-20 text-center bg-[#141d1a] rounded-3xl border border-[#263530] p-8 space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-stone-800/80 border border-stone-700 flex items-center justify-center mx-auto text-amber-400 shadow-inner">
+              <ImageIcon className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-white">No Images Found for "{activeTab}"</h3>
+            <p className="text-xs text-stone-400 max-w-md mx-auto">
+              There are currently no gallery items categorized under {activeTab}. Select another category tab above to view our other design creations.
+            </p>
+            <button
+              onClick={() => setActiveTab("All")}
+              className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition"
+            >
+              View All Works ({items.length})
+            </button>
+          </div>
+        )}
+
+        {/* Responsive Pinterest-Style Masonry Grid */}
+        {!loading && !error && filteredItems.length > 0 && (
+          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-5 space-y-5">
+            {filteredItems.map((item) => {
+              const imageUrl = getMediaUrl(item.objectKey);
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => setActiveLightboxItem(item)}
+                  className="break-inside-avoid relative group overflow-hidden rounded-2xl bg-[#151f1c] border border-[#283732] shadow-lg hover:shadow-2xl hover:border-amber-400/50 transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer"
+                >
+                  {/* Image */}
+                  <img
+                    src={imageUrl}
+                    alt={item.title}
+                    loading="lazy"
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    onError={(e) => {
+                      // Handle broken image safely
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
+                  />
+
+                  {/* Gradient & Hover Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 pointer-events-none">
+                    {/* Top Tag */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-400 text-slate-950 shadow">
+                        {item.category}
+                      </span>
+                      <div className="p-2 rounded-xl bg-white/20 backdrop-blur-md text-white shadow">
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+
+                    {/* Bottom Metadata */}
+                    <div className="space-y-1 text-left">
+                      <h4 className="text-sm font-bold text-white leading-snug line-clamp-2 drop-shadow">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-stone-300 font-medium flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-amber-400" />
+                        <span>{item.location}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Lightbox Modal */}
+        {activeLightboxItem && (
+          <div
+            onClick={() => setActiveLightboxItem(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/95 backdrop-blur-xl cursor-pointer animate-in fade-in"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-5xl max-h-[90vh] w-full flex flex-col bg-[#141d1a] border border-[#2e3e38] rounded-3xl overflow-hidden shadow-2xl cursor-default"
+            >
+              {/* Close Button */}
               <button
-                onClick={() => setActiveModalItem(null)}
-                className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 transition"
+                onClick={() => setActiveLightboxItem(null)}
+                className="absolute top-4 right-4 z-20 p-2.5 bg-slate-950/80 hover:bg-amber-400 hover:text-slate-950 text-white rounded-full transition shadow-lg border border-white/10"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12">
-                <div className="lg:col-span-7 bg-slate-950 min-h-[300px] lg:min-h-[450px] relative flex flex-col justify-center p-4">
-                  <img
-                    src={getOptimizedImageUrl(activeModalItem.img, 1200)}
-                    alt={activeModalItem.title}
-                    className="w-full h-full object-contain max-h-[400px] rounded-2xl"
-                  />
-                  {activeModalItem.galleryImages.length > 0 && (
-                    <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-                      {activeModalItem.galleryImages.map((gUrl, idx) => (
-                        <img
-                          key={idx}
-                          src={getOptimizedImageUrl(gUrl, 300)}
-                          alt={`Gallery photo ${idx}`}
-                          className="w-16 h-16 object-cover rounded-xl border border-slate-800 shrink-0 cursor-pointer hover:border-amber-500 transition"
-                          onClick={() =>
-                            setActiveModalItem({
-                              ...activeModalItem,
-                              img: gUrl,
-                            })
-                          }
-                        />
-                      ))}
-                    </div>
+              {/* Main Image Container */}
+              <div className="relative flex-1 bg-slate-950 flex items-center justify-center min-h-[300px] max-h-[70vh] p-2">
+                <img
+                  src={getMediaUrl(activeLightboxItem.objectKey)}
+                  alt={activeLightboxItem.title}
+                  className="max-w-full max-h-[68vh] object-contain rounded-xl"
+                />
+              </div>
+
+              {/* Lightbox Information Footer */}
+              <div className="p-6 bg-[#182320] border-t border-[#263630] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[11px] font-bold text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-md">
+                      {activeLightboxItem.category}
+                    </span>
+                    <span className="text-xs text-stone-400 flex items-center gap-1 font-medium">
+                      <MapPin className="w-3.5 h-3.5 text-stone-400" />
+                      {activeLightboxItem.location}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white">
+                    {activeLightboxItem.title}
+                  </h3>
+                  {activeLightboxItem.description && (
+                    <p className="text-xs text-stone-300 mt-1 max-w-2xl font-normal">
+                      {activeLightboxItem.description}
+                    </p>
                   )}
                 </div>
-                <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-amber-600 uppercase tracking-wider bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-                      {activeModalItem.categoryName}
-                    </span>
-                    <h2 className="text-2xl font-extrabold text-slate-900 mt-3">
-                      {activeModalItem.title}
-                    </h2>
-                    <p className="text-xs text-slate-500 font-semibold mt-1 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{activeModalItem.location}</span>
-                    </p>
-                    <p className="text-slate-600 text-sm mt-4 leading-relaxed">
-                      {activeModalItem.desc}
-                    </p>
 
-                    <div className="mt-6 pt-6 border-t border-slate-100 space-y-2">
-                      <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 mb-2">
-                        Design Information
-                      </h4>
-                      {activeModalItem.details.map((d) => (
-                        <div key={d} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                          <span>{d}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-8 pt-4 flex flex-col gap-2">
-                    <a
-                      href={`https://wa.me/918123758878?text=${encodeURIComponent(
-                        `Hi KRV Builders, I'm interested in your ${activeModalItem.categoryName} design "${activeModalItem.title}". Can you provide custom design pricing?`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-emerald-500 transition shadow-md"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      Inquire About This Design
-                    </a>
-                  </div>
+                <div className="shrink-0 flex items-center gap-3">
+                  <a
+                    href={`/contact?project=${encodeURIComponent(activeLightboxItem.title)}`}
+                    className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-md shadow-amber-400/10"
+                  >
+                    Inquire About This Design
+                  </a>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+      </div>
+    </main>
   );
 }

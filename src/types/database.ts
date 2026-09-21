@@ -1,12 +1,27 @@
 export type ProjectStatus = "in_progress" | "completed";
 
 export type ConstructionPhase =
-  | "Site Excavation & Earthwork"
-  | "Foundation & Column Casting"
-  | "Brickwork, Lintels & Slab Casting"
-  | "Plastering & Electrical Concealing"
-  | "Flooring & Tile Work"
-  | "Interior Finishing & Handover";
+  | "Site Clearance"
+  | "Earth Work Excavation"
+  | "Foundation and Footing Construction"
+  | "Plinth Work"
+  | "Ground Floor Block Works Completion"
+  | "Ground Floor Slab Completion"
+  | "First Floor Block Works Completion"
+  | "First Floor Slab Completion"
+  | "Electrical Works"
+  | "Plumbing Works"
+  | "Ground Floor Internal Plastering Completion"
+  | "First Floor Internal Plastering Completion"
+  | "Ground Floor External Plastering Completion"
+  | "First Floor External Plastering Completion"
+  | "Tiles Works Completion"
+  | "External Painting Completion"
+  | "Internal Painting Completion"
+  | "All Finishing Works Completion"
+  | "Parapet Wall"
+  | "Compound Wall"
+  | "Elevation Design Construction";
 
 export interface Project {
   id: string;

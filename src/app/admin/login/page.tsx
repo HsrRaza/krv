@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -25,29 +26,18 @@ export default function AdminLoginPage() {
     setErrorMsg(null);
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim(),
       password,
     });
 
-    if (!error && data.session) {
-      router.push("/admin/projects");
-      router.refresh();
+    if (error || !data.session) {
+      setErrorMsg(error?.message || "Invalid email or password.");
+      setLoading(false);
       return;
     }
 
-    // Fallback/direct verification for designated admin credentials
-    if (
-      email.trim().toLowerCase() === "krvbuildersndevelopers@gmail.com" &&
-      password === "Krv@123"
-    ) {
-      document.cookie = "krv_admin_session=true; path=/; max-age=86400";
-      router.push("/admin/projects");
-      router.refresh();
-      return;
-    }
-
-    setErrorMsg(error?.message || "Invalid login credentials.");
-    setLoading(false);
+    router.push("/admin/projects");
+    router.refresh();
   };
 
   return (
@@ -101,12 +91,21 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-700 mb-1.5">
-                Password *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="admin-password" className="block text-xs font-medium uppercase tracking-wider text-slate-700">
+                  Password *
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-semibold text-amber-600 hover:text-amber-700 transition hover:underline focus:outline-none focus:ring-2 focus:ring-amber-500 rounded"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
                 <input
+                  id="admin-password"
                   type="password"
                   required
                   placeholder="••••••••"

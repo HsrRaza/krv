@@ -1,0 +1,16 @@
+name = "krv-builders"
+
+main = "worker/index.ts"
+
+compatibility_date = "2026-09-12"
+
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "krv-db"
+database_id = "502ae183-b837-4f79-b0d2-0b27670ede19"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "krv-media"
