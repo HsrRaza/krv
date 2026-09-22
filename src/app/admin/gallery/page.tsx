@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -49,6 +50,13 @@ export default function AdminGalleryPage() {
 
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProjectId, setUploadProjectId] = useState<string>("");
+
+  useEffect(() => {
+    if (showUploadForm && !uploadProjectId) {
+      setUploadProjectId(crypto.randomUUID());
+    }
+  }, [showUploadForm, uploadProjectId]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -62,12 +70,10 @@ export default function AdminGalleryPage() {
     return getMediaUrl(objectKey);
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    setLoading(true);
+  const fetchProjects = async (showLoading = false) => {
+    if (showLoading) {
+      setLoading(true);
+    }
 
     try {
       const res = await fetch("/api/admin/projects");
@@ -124,6 +130,10 @@ export default function AdminGalleryPage() {
     }
   };
 
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
   const handleCreateGalleryItem = async (
     e: React.FormEvent
   ) => {
@@ -143,6 +153,7 @@ export default function AdminGalleryPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id: uploadProjectId || crypto.randomUUID(),
           title: formData.title,
           category: formData.category,
           location: formData.location || "Ramanagara",
@@ -174,9 +185,10 @@ export default function AdminGalleryPage() {
         cover_image: "",
       });
 
+      setUploadProjectId(crypto.randomUUID());
       setShowUploadForm(false);
 
-      await fetchProjects();
+      await fetchProjects(true);
     } catch (error) {
       alert(
         `Submission error: ${
@@ -249,7 +261,7 @@ export default function AdminGalleryPage() {
         }
       }
 
-      await fetchProjects();
+      await fetchProjects(true);
     } catch (error) {
       alert(
         `Error deleting asset: ${
@@ -435,7 +447,7 @@ export default function AdminGalleryPage() {
               }
               canUpload={true}
               label="Select Image to Upload (R2 • WebP • Max 5MB)"
-              projectId="gallery-upload"
+              projectId={uploadProjectId}
             />
           </div>
 

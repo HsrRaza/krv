@@ -460,6 +460,24 @@ export default {
           );
         }
 
+        // Guard: Reject if object_key is already bound to a DIFFERENT project_id
+        const conflictingImage = await env.DB
+          .prepare(
+            "SELECT id, project_id FROM project_images WHERE object_key = ? AND project_id != ?"
+          )
+          .bind(body.object_key, projectId)
+          .first<{ id: string; project_id: string }>();
+
+        if (conflictingImage) {
+          return Response.json(
+            {
+              success: false,
+              error: `object_key '${body.object_key}' is already associated with project '${conflictingImage.project_id}'`,
+            },
+            { status: 400 }
+          );
+        }
+
         if (
           body.image_type !== "cover" &&
           body.image_type !== "gallery"

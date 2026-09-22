@@ -103,9 +103,12 @@ async function uploadImage(
     "cover.webp"
   );
 
+  const imageId = crypto.randomUUID();
+  const objectKey = `projects/${projectId}/cover-${imageId}.webp`;
+
   formData.append(
     "object_key",
-    `projects/${projectId}/cover.webp`
+    objectKey
   );
 
   const response = await fetch(
