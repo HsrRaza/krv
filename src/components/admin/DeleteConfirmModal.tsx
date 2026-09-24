@@ -80,7 +80,7 @@ export default function DeleteConfirmModal({
             {deleting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Purging Cloudinary Assets...</span>
+                <span>Removing  Assets...</span>
               </>
             ) : (
               <>
