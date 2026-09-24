@@ -177,7 +177,7 @@ export default function ProjectModal({
        */
       await onSave(
         payload,
-        editingProject?.id || projectId
+        editingProject?.id
       );
 
       onClose();

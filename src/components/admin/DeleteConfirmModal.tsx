@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -58,14 +59,7 @@ export default function DeleteConfirmModal({
           <p className="text-xs text-slate-600 mt-1 leading-relaxed">
             You are about to delete <strong className="text-slate-900">&quot;{project.title}&quot;</strong>.
           </p>
-          <div className="mt-3 p-3 rounded-xl bg-stone-50 border border-slate-200 text-xs text-slate-600 space-y-1">
-            <div>
-              • <strong>Database Row:</strong> Will be purged from Supabase.
-            </div>
-            <div>
-              • <strong>Cloudinary Pipeline:</strong> Will purge <strong>{assetCount} associated media asset(s)</strong>.
-            </div>
-          </div>
+         
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">
