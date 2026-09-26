@@ -374,24 +374,25 @@ export default function AdminGalleryPage() {
                 }
                 className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-slate-200 text-slate-900 text-sm font-bold focus:outline-none focus:border-amber-600 focus:bg-white transition"
               >
+                <option value="Architectural Planning (2D & 3D Vastu)">
+                  Architectural Planning (2D & 3D Vastu)
+                </option>
                 <option value="Elevation Design">
                   Elevation Design
-                </option>
-                <option value="Architectural Planning">
-                  Architectural Planning
-                </option>
-                <option value="Interior Design">
-                  Interior Design
-                </option>
-                <option value="3D Design">
-                  3D Design
-                </option>
-                <option value="4D Design">
-                  4D Design
                 </option>
                 <option value="Structural Design">
                   Structural Design
                 </option>
+                <option value="3D Floor Plans">
+                  3D Floor Plans
+                </option>
+                <option value="Consultant">
+                  Consultant
+                </option>
+                <option value="Turnkey Construction">
+                  Turnkey Construction
+                </option>
+                
               </select>
             </div>
           </div>
