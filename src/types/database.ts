@@ -15,7 +15,7 @@ export type ConstructionPhase =
   | "External Plastering"
   | "Internal Painting"
   | "External Painting"
-  | "Flooring"
+  | "Tiles Work"
   | "Fixing of Doors & Windows"
   | "Fining Work";
 

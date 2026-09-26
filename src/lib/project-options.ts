@@ -29,7 +29,7 @@ export const CONSTRUCTION_PHASES = [
   "External Plastering",
   "Internal Painting",
   "External Painting",
-  "Flooring",
+  "Tiles Work",
   "Fixing of Doors & Windows",
   "Fining Work",
 ] as const;
