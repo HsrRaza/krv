@@ -33,3 +33,5 @@ export const CONSTRUCTION_PHASES = [
   "Fixing of Doors & Windows",
   "Fining Work",
 ] as const;
+
+export type ConstructionPhase = typeof CONSTRUCTION_PHASES[number];
